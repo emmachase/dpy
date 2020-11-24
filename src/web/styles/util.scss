@@ -1,0 +1,17 @@
+@mixin break-width($breakpoint, $width) {
+    @media (max-width: $breakpoint) {
+        max-width: $width;
+    }
+}
+
+@mixin break-margin($breakpoint, $value) {
+    @media (max-width: $breakpoint) {
+        margin: $value;
+    }
+}
+
+@mixin break-font-size($breakpoint, $value) {
+    @media (max-width: $breakpoint) {
+        font-size: $value;
+    }
+}

@@ -1,0 +1,102 @@
+@import "theme.scss";
+
+.textfield {
+    margin: 16px;
+
+    input, textarea {
+        background: $input-color;
+        color: $text-color;
+        border: none;
+        font-family: inherit;
+        font-size: 18px;
+        line-height: 40px;
+        border-radius: 8px;
+        width: 100%;
+        outline: none;
+        text-indent: 1em;
+
+        &::placeholder {
+            font-weight: 900;
+            opacity: 0.4;
+        }
+    }
+
+    textarea {
+        resize: none;
+        height: 130px;
+        text-indent: 0;
+        line-height: 1.2;
+        padding: 12px 1em;
+    }
+
+    &.error {
+        input, textarea {
+            background: mix(mix($input-color, $error-color, 85%), $alt-color, 80%);
+            color: mix($text-color, $error-color, 85%);
+
+            &::placeholder {
+                color: mix($text-color, $error-color, 85%);
+            }
+        }
+    }
+}
+
+@keyframes button-loading {
+    0% {
+        background: $disabled-color;
+        color: darken($disabled-color, 10%);
+    }
+
+    100% {
+        background: darken($disabled-color, 3%);
+        color: darken($disabled-color, 15%);
+    }
+}
+
+.button {
+    display: block;
+    border: none;
+    outline: none;
+
+    background: $primary;
+    color: $alt-color;
+    font-size: 18px;
+    line-height: 40px;
+    border-radius: 8px;
+
+    padding: 0 32px;
+    min-width: 200px;
+
+    &.wide {
+        width: calc(100% - 32px);
+    }
+
+    &.margin {
+        margin: 16px;
+    }
+
+    text-align: center;
+    cursor: pointer;
+
+    font-weight: 900;
+    text-transform: uppercase;
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: darken($primary, 3%);
+    }
+
+    &:active {
+        background: darken($primary, 6%);
+    }
+
+    &[disabled]:not(.hide-load) {
+        background: $disabled-color;
+        color: darken($disabled-color, 10%);
+        cursor: default;
+    }
+
+    &.loading {
+        animation: button-loading infinite alternate 0.5s 0.5s;
+    }
+}

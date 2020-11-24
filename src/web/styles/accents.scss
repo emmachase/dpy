@@ -1,0 +1,160 @@
+@use "sass:color";
+
+@import "theme.scss";
+
+.positioner {
+  width: 0;
+  height: 0;
+  position: relative;
+
+  &.inline {
+    display: inline-block;
+  }
+}
+
+@mixin color-variants($name, $baseValue) {
+  &.#{$name} {
+    background: $baseValue;
+  }
+
+  &.light-#{$name} {
+    background: scale-color($baseValue, $lightness: 50%);
+  }
+
+  &.muted-#{$name} {
+    background: scale-color($baseValue, $lightness: 80%);
+  }
+}
+
+.accent {
+  @include color-variants("primary", $primary);
+
+  &.alt-color {
+    background: white;
+  }
+
+  @mixin accent-sizer($name, $value) {
+    &.#{$name} {
+      width: $value;
+      height: $value;
+      border-width: $value !important;
+    }
+  }
+
+  @include accent-sizer("tiny", 8px);
+  @include accent-sizer("little", 16px);
+  @include accent-sizer("small", 32px);
+  @include accent-sizer("medium", 64px);
+
+  &.huge {
+    width: 112px;
+    height: 112px;
+    border-width: 112px !important;
+
+    @media (max-width: 1200px) {
+      width: 90px;
+      height: 90px;
+      border-width: 90px !important;
+    }
+
+    @media (max-width: 1050px) {
+      display: none;
+    }
+  }
+
+  &.triangle {
+    width: 0;
+    height: 0;
+    box-sizing: content-box;
+
+    border-right: solid white;
+    border-bottom: solid transparent;
+  }
+
+  &.hemi-1 {
+    border-top-left-radius: 100%;
+  }
+
+  &.hemi-2 {
+    border-top-right-radius: 100%;
+  }
+
+  &.hemi-3 {
+    border-bottom-left-radius: 100%;
+  }
+
+  &.hemi-4 {
+    border-bottom-right-radius: 100%;
+  }
+
+  &.dot {
+    border-radius: 100%;
+  }
+
+  &.offset {
+    position: absolute;
+    left: -42px;
+    bottom: -42px;
+  }
+}
+
+.grid-2 {
+  display: inline-grid;
+  grid-template-columns: fit-content(0) fit-content(0);
+}
+
+.grid-4 {
+  display: inline-grid;
+  grid-template-columns: fit-content(0) fit-content(0) fit-content(0) fit-content(0);
+}
+
+// $shadowImageColor: hsla(0, 0, 0, 0.3);
+// .shadow-img {
+//   width: auto;
+//   height: 272px;
+//   filter: drop-shadow(0 3px 12px rgba(0, 0, 0, 0.2));
+
+//   rect {
+//     stroke: $primary !important;
+//   }
+
+//   path {
+//     fill: $primary !important;
+//   }
+
+//   &.filler {
+//     rect {
+//       fill: $primary !important;
+//     }
+//   }
+// }
+
+.dots {
+  @extend .grid-4;
+
+  position: relative;
+  grid-gap: 12px;
+  left: 0;
+  top: -40px;
+
+  &.left {
+    left: -20px;
+  }
+
+  &.right {
+    left: 20px;
+  }
+}
+
+.page-accent {
+    position: fixed;
+    bottom: -8px;
+    left: -10vw;
+
+    z-index: -100;
+
+    svg {
+        width: 120vw;
+        height: auto;
+    }
+}

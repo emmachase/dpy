@@ -1,0 +1,41 @@
+@import "../theme.scss";
+
+.form-bar {
+    padding: 24px;
+
+    @media (max-width: 900px) {
+        > * {
+            max-width: 500px;
+            margin: 0 32px;
+        }
+    }
+
+    .form-entry {
+        .heading {
+            margin: 0 0 8px;
+            align-items: baseline;
+
+            .label {
+                font-size: 24px;
+                opacity: 65%;
+            }
+
+            .optional {
+                font-size: 12px;
+                opacity: 45%;
+            }
+        }
+
+        .textfield {
+            margin: 8px 0 0;
+        }
+
+        &:not(:first-of-type) {
+            margin: 32px 0 0;
+        }
+    }
+
+    .submit {
+        margin: 24px 0;
+    }
+}

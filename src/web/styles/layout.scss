@@ -1,0 +1,88 @@
+h1 {
+    font-size: 36px;
+    font-weight: 900;
+    opacity: 80%;
+    margin: 0;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 900;
+    opacity: 60%;
+    margin: 0;
+}
+
+aside {
+    font-size: 14px;
+    opacity: 60%;
+    margin: 16px 0;
+
+    &.thick {
+        font-weight: 900;
+        opacity: 30%;
+        margin: 0;
+    }
+}
+
+.twobreak {
+    flex-direction: row;
+    @media (max-width: 900px) {
+        flex-direction: column;
+    }
+}
+
+.fullpage {
+    height: 100vh;
+}
+
+.login-container {
+    flex: 1;
+    text-align: center;
+    max-width: 400px;
+}
+
+.gcenter {
+    display: grid;
+    place-items: center;
+}
+
+@mixin frame-size($break, $size) {
+    @media (max-width: $break) {
+        width: $size;
+        height: $size;
+    }
+}
+
+.logo-image {
+    object-fit: contain;
+
+    width: 700px;
+    height: 700px;
+
+    @include frame-size(1400px, 500px);
+    @include frame-size(1100px, 400px);
+    @include frame-size(900px, 300px);
+}
+
+.content-wrapper {
+    margin: auto;
+    width: 100%;
+
+    max-width: 1000px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 160px);
+    grid-gap: 32px;
+
+    justify-content: space-evenly;
+
+    .im-card {
+        height: 160px;
+
+        .react-loading-skeleton {
+            height: 100%;
+        }
+    }
+}
