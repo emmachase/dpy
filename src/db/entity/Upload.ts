@@ -4,7 +4,7 @@ import { Tag } from "./Tag";
 @Entity()
 export class Upload {
 
-    @PrimaryColumn({ length: 64 })
+    @PrimaryColumn({ length: 127 })
     name: string;
 
     @Column()

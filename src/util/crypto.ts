@@ -1,6 +1,20 @@
 import argon from "argon2";
 import crypto from "crypto";
 
+// Warning: this function is destructive, the original may or may not be recoverable
+export function coerceBase36(value: string): string {
+    const result = [];
+    for (let char of value) {
+        while (!char.match(/[0-9a-zA-Z]/)) {
+            char = String.fromCodePoint((191 * char.codePointAt(0)! + 1) % 256);
+        }
+
+        result.push(char);
+    }
+
+    return result.join("");
+}
+
 /**
  * Generates a cryptographically secure string of random bytes.
  * @param length How many bytes of data to generate, this is **NOT** the length of the result string.
@@ -25,6 +39,15 @@ export function randomByteString(length = 32): Promise<string> {
 export async function randomString(length = 32): Promise<string> {
     const str = await randomByteString(length);
     return str.substring(0, length);
+}
+
+/**
+ * Generates a cryptographically secure string of random ascii characters in base36.
+ * @param length The length of the resultant string
+ */
+export async function randomString36(length = 32): Promise<string> {
+    const str = await randomByteString(length);
+    return coerceBase36(str).substring(0, length);
 }
 
 /**

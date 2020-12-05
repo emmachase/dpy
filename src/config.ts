@@ -23,6 +23,7 @@ export interface MetaSection {
     subtitle?: string
     notice?: string
     logo?: string
+    namingTemplate: string
 }
 
 export interface DumpyConfig {
@@ -40,7 +41,8 @@ const defaultConfig = {
     },
     meta: {
         color: "#f76262",
-        directory: "./images/"
+        directory: "./images/",
+        namingTemplate: "{chars 4}"
     },
     server: {
         listen: 5080
@@ -124,11 +126,16 @@ async function promptMeta(): Promise<MetaSection> {
 
     const logo = await promptLogo();
 
-    const misc = await inquirer.prompt<Pick<MetaSection, "directory">>([
+    const misc = await inquirer.prompt<Pick<MetaSection, "directory" | "namingTemplate">>([
         {
             name: "directory",
             message: "Image/File Directory:",
             default: defaultConfig.meta.directory
+        },
+        {
+            name: "namingTemplate",
+            message: "File Naming Template:",
+            default: defaultConfig.meta.namingTemplate
         }
     ]);
 
@@ -301,7 +308,6 @@ export async function getConfig(): Promise<DumpyConfig> {
  */
 export async function getSiteConfig(domain: string): Promise<SiteConfig> {
     const config = await getConfig();
-    console.log(config.meta.overrides);
     const baseConfig = {...config.meta};
     const subConfig = config.meta.overrides
         && (Object

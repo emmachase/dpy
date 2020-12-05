@@ -1,16 +1,17 @@
 import jwt from "jsonwebtoken";
 import { getConnection } from "typeorm";
-import { APIRouter } from ".";
 import { getConfig } from "../config";
 import { RefreshToken } from "../db/entity/RefreshToken";
 import { jwtSecret } from "../secrets";
 import { verifyPassword } from "../util/crypto";
 import { MINUTES, timeFromNow, WEEKS } from "../util/time";
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, Response, Router } from "express";
 import { Logger } from "../logger";
 import chalk from "chalk";
 
 const logger = new Logger("auth");
+
+export const AuthRouter = Router();
 
 export enum JWT_AUD {
     ACCESS = "acs",
@@ -113,7 +114,7 @@ function sendTokens(res: Response, access: string, refresh: string) {
  * @apiSuccess (Body) {String} accessToken Token that can be used for API requests.
  * @apiSuccess (Cookie) {String} refreshToken A http-only cookie set, to be used for the refresh endpoint.
  */
-APIRouter.post("/login", async (req, res) => {
+AuthRouter.post("/login", async (req, res) => {
     logger.trace("/login");
 
     if (typeof req.body?.password !== "string") {
@@ -156,7 +157,7 @@ APIRouter.post("/login", async (req, res) => {
  * @apiSuccess (Body) {String} accessToken Token that can be used for API requests.
  * @apiSuccess (Cookie) {String} refreshToken A http-only cookie set, to be used for the refresh endpoint.
  */
-APIRouter.post("/refresh", async (req, res) => {
+AuthRouter.post("/refresh", async (req, res) => {
     // Verify that the request contains a valid refresh token
     if (!req.cookies) return res.sendStatus(401);
     const encodedToken = req.cookies.refreshToken ?? "";
@@ -182,7 +183,7 @@ APIRouter.post("/refresh", async (req, res) => {
  * @apiName Logout
  * @apiGroup Authentication
  */
-APIRouter.post("/logout", async (req, res) => {
+AuthRouter.post("/logout", async (req, res) => {
     // Verify that the request contains a valid refresh token
     if (!req.cookies) return res.sendStatus(401);
     const encodedToken = req.cookies.refreshToken ?? "";
