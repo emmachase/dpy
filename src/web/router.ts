@@ -15,9 +15,9 @@ const router = express.Router();
 router.use(cookieParser());
 
 const NO_AUTH_REDIR = "/login"; // Where to redirect to auth
-const AUTH_REDIR = "/gallery"; // Where to redirect to auth
+// TODO: Evaluate this => const AUTH_REDIR = "/gallery"; // Where to redirect to auth
 const routing: Record<string, {
-    page: PageMeta,
+    page: PageMeta
     needsAuth: boolean
 }> = {
     "/login": { page: LoginPage, needsAuth: false },

@@ -325,6 +325,24 @@ aside.thick {
     height: 300px;
   }
 }
+.uploadbox.waiting {
+  cursor: pointer;
+}
+.uploadbox .clickable:hover {
+  fill-opacity: 0.1;
+}
+.uploadbox .clickable:active {
+  fill-opacity: 0.2;
+}
+.uploadbox .close-btn:hover {
+  cursor: pointer;
+}
+.uploadbox .close-btn:hover circle {
+  fill: #D4D4D4;
+}
+.uploadbox .close-btn:hover:active circle {
+  fill: #D0D0D0;
+}
 
 .form-bar {
   padding: 24px;

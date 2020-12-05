@@ -10,6 +10,7 @@ dependencies:
   react-dom: 17.0.1_react@17.0.1
   react-hamburger-menu: 1.2.1_react@17.0.1
   react-loading-skeleton: 2.1.1_react@17.0.1
+  react-spring: 8.0.27_react-dom@17.0.1+react@17.0.1
   reflect-metadata: 0.1.13
   sequelize-cli: 6.2.0
   sqlite3: 5.0.0
@@ -61,6 +62,12 @@ packages:
     dev: false
     resolution:
       integrity: sha512-J5AIf3vPj3UwXaAzb5j1xM4WAQDX3EMgemF8rjCP3SoW09LfRKAXQKt6CoVYl230P6iWdRcBbnLDDdnqWxZSCA==
+  /@babel/runtime/7.12.5:
+    dependencies:
+      regenerator-runtime: 0.13.7
+    dev: false
+    resolution:
+      integrity: sha512-plcc+hbExy3McchJCEQG3knOsuh3HH+Prx1P6cLIkET/0dLuQDEnrT+s27Axgc9bqfsmNUNHfscgMUdBpC9xfg==
   /@babel/types/7.12.1:
     dependencies:
       '@babel/helper-validator-identifier': 7.10.4
@@ -3050,7 +3057,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-    dev: true
     resolution:
       integrity: sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
   /proto-list/1.2.4:
@@ -3141,7 +3147,6 @@ packages:
     resolution:
       integrity: sha512-It5Jque8bx9lYn8q/NFtu9Ci20fBMsyunFSp06ZGgWXbMZlTFrN0IxKguGZ0igYQr6RvJ3S9CN3rTjrObmq/Cw==
   /react-is/16.13.1:
-    dev: true
     resolution:
       integrity: sha512-24e6ynE2H+OKt4kqsOvNd8kBpV65zoxbA4BVsEOB3ARVWQki/DHzaUoC5KuON/BiccDaCCTZBuOcfZs70kR8bQ==
   /react-loading-skeleton/2.1.1_react@17.0.1:
@@ -3153,6 +3158,18 @@ packages:
       react: ^15.6.1 || ^16.0.0
     resolution:
       integrity: sha512-+fGvgG9ieUw4D5QVgpqJkJ75jhzUdz96GRsA0HjTlR0Mpj9DJUEFc0AKELs7ZkqWVH8/DiroaaufSrOPld1kGA==
+  /react-spring/8.0.27_react-dom@17.0.1+react@17.0.1:
+    dependencies:
+      '@babel/runtime': 7.12.5
+      prop-types: 15.7.2
+      react: 17.0.1
+      react-dom: 17.0.1_react@17.0.1
+    dev: false
+    peerDependencies:
+      react: '>= 16.8.0'
+      react-dom: '>= 16.8.0'
+    resolution:
+      integrity: sha512-nDpWBe3ZVezukNRandTeLSPcwwTMjNVu1IDq9qA/AMiUqHuRN4BeSWvKr3eIxxg1vtiYiOLy4FqdfCP5IoP77g==
   /react/17.0.1:
     dependencies:
       loose-envify: 1.4.0
@@ -4326,6 +4343,7 @@ specifiers:
   react-dom: ^17.0.1
   react-hamburger-menu: ^1.2.1
   react-loading-skeleton: ^2.1.1
+  react-spring: ^8.0.27
   reflect-metadata: ^0.1.13
   sass: ^1.27.0
   sequelize-cli: ^6.2.0

@@ -40,6 +40,7 @@
     "react-dom": "^17.0.1",
     "react-hamburger-menu": "^1.2.1",
     "react-loading-skeleton": "^2.1.1",
+    "react-spring": "^8.0.27",
     "reflect-metadata": "^0.1.13",
     "sequelize-cli": "^6.2.0",
     "sqlite3": "^5.0.0",

@@ -21,7 +21,7 @@ export interface PageMeta {
     needsAuth: boolean
 }
 
-const cssFiller = fs.readFileSync("./public/styles.css"); // TODO
+// const cssFiller = fs.readFileSync("./public/styles.css"); // TODO currently not used because of watch modes
 
 /**
  * Takes a page module and generates the HTML response to send to the client using Server-Side Rendering.

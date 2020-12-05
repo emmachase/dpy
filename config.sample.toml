@@ -18,6 +18,9 @@ subtitle="my file host sits here"
 logo="mylogo.png"
 directory="./images/" # Optional
 
+# Naming Template defaults to "{chars 4}" which produces random names like "xU4P.png"
+namingTemplate="and-her-{pick adjectives.txt}-{pick nouns.txt}"
+
 # Optionally define overrides for alternative domains
 [meta.overrides.site2] # The section name doesn't matter, only that it's unique
 domain="my.other.site.com"

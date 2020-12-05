@@ -29,6 +29,16 @@ module.exports = {
         "semi": ["error", "always"],
         "react/prop-types": "off",
         "eqeqeq": "error",
+        "@typescript-eslint/member-delimiter-style": ["error", {
+            "multiline": {
+                "delimiter": "none",
+                "requireLast": true
+            },
+            "singleline": {
+                "delimiter": "comma",
+                "requireLast": false
+            }
+        }],
         "@typescript-eslint/no-floating-promises": "error",
         "@typescript-eslint/no-explicit-any": "off",
         "@typescript-eslint/no-non-null-assertion": "off",

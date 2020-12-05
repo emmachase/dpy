@@ -17,4 +17,32 @@
     }
 
     left: 0;
+
+    &.waiting {
+        cursor: pointer;
+    }
+
+    .clickable {
+        &:hover {
+            fill-opacity: 0.1;
+        }
+
+        &:active {
+            fill-opacity: 0.2;
+        }
+    }
+
+    .close-btn:hover {
+        cursor: pointer;
+
+        circle {
+            // stroke: #BABABA;
+            fill: #D4D4D4;
+        }
+
+        &:active circle {
+            // stroke: #B0B0B0;
+            fill: #D0D0D0;
+        }
+    }
 }

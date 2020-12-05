@@ -2,7 +2,7 @@ import React, { FC, useState } from "react";
 import { clazz } from "../layout/utils";
 
 export const TaskButton: FC<{
-    className?: string,
+    className?: string
     disabled?: boolean
     task: () => Promise<void>
 }> = (props) => {

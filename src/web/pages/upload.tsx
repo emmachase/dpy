@@ -9,8 +9,8 @@ import { TextField } from "../components/input/text";
 import { TaskButton } from "../components/input/taskbutton";
 
 const FormEntry: FC<{
-    label: string,
-    name: string,
+    label: string
+    name: string
     optional?: boolean
     placeholder?: string
     area?: boolean
@@ -28,7 +28,7 @@ const FormEntry: FC<{
     );
 };
 
-const pageRoot: PageRootComponent = ({appParams}) => {
+const pageRoot: PageRootComponent = () => {
     return (<>
         <NavBar activePage="UPLOAD"/>
         <div className="content-wrapper">
@@ -42,6 +42,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                             name="name"
                             label="Filename"
                             placeholder="shapes.png"
+                            optional={true}
                         />
 
                         <FormEntry
@@ -65,7 +66,9 @@ const pageRoot: PageRootComponent = ({appParams}) => {
 
                         <Flex className="submit">
                             <Flex.Child/>
-                            <TaskButton task={async () => {}}>Upload</TaskButton>
+                            <TaskButton task={async () => {
+                                console.log("TODO: Upload");
+                            }}>Upload</TaskButton>
                         </Flex>
                     </Flex>
                 </Flex.Child>

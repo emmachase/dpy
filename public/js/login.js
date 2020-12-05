@@ -18,19 +18,19 @@ var __page = (() => {
     for (var name in all)
       __defProp(target, name, {get: all[name], enumerable: true});
   };
-  var __exportStar = (target, module) => {
+  var __exportStar = (target, module, desc) => {
     __markAsModule(target);
-    if (typeof module === "object" || typeof module === "function") {
+    if (module && typeof module === "object" || typeof module === "function") {
       for (let key of __getOwnPropNames(module))
         if (!__hasOwnProp.call(target, key) && key !== "default")
-          __defProp(target, key, {get: () => module[key], enumerable: __getOwnPropDesc(module, key).enumerable});
+          __defProp(target, key, {get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable});
     }
     return target;
   };
   var __toModule = (module) => {
     if (module && module.__esModule)
       return module;
-    return __exportStar(__defProp(__create(__getProtoOf(module)), "default", {value: module, enumerable: true}), module);
+    return __exportStar(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", {value: module, enumerable: true}), module);
   };
 
   // src/web/pages/login.tsx
@@ -38,8 +38,8 @@ var __page = (() => {
     __export(exports, {
       default: () => login_default
     });
-    const react5 = __toModule(require("react"));
-    const pageRoot = ({appParams}) => {
+    var react5 = __toModule(require("react"));
+    var pageRoot = ({appParams}) => {
       const [invalid, setInvalid] = react5.useState(false);
       const [password, setPassword] = react5.useState("");
       const loginTask = async () => {
@@ -90,19 +90,19 @@ var __page = (() => {
   });
 
   // src/util/poly.ts
-  const as = (value) => value;
+  var as = (value) => value;
 
   // src/web/components/input/text.tsx
-  const react2 = __toModule(require("react"));
+  var react2 = __toModule(require("react"));
 
   // src/web/components/layout/utils.ts
-  const react = __toModule(require("react"));
+  var react = __toModule(require("react"));
   function clazz(...classes) {
     return Array.from(new Set(classes.flat().filter((x) => x))).join(" ");
   }
 
   // src/web/components/input/text.tsx
-  const TextField = (props) => {
+  var TextField = (props) => {
     const controlProps = {
       autoFocus: props.autofocus,
       type: props.type ?? "text",
@@ -120,8 +120,8 @@ var __page = (() => {
   };
 
   // src/web/components/layout/flex.tsx
-  const react3 = __toModule(require("react"));
-  const Flex = (props) => /* @__PURE__ */ react3.default.createElement("div", {
+  var react3 = __toModule(require("react"));
+  var Flex = (props) => /* @__PURE__ */ react3.default.createElement("div", {
     className: props.className,
     style: {
       display: "flex",
@@ -142,8 +142,8 @@ var __page = (() => {
   };
 
   // src/web/components/input/taskbutton.tsx
-  const react4 = __toModule(require("react"));
-  const TaskButton = (props) => {
+  var react4 = __toModule(require("react"));
+  var TaskButton = (props) => {
     const [loading, setLoading] = react4.useState(false);
     const [hideLoading, setHideLoading] = react4.useState(true);
     const handleClick = async () => {
@@ -162,13 +162,13 @@ var __page = (() => {
   };
 
   // src/web/services/api.ts
-  const API_ROOT = "/api";
+  var API_ROOT = "/api";
   function apiPath(endpoint) {
     return API_ROOT + "/" + endpoint;
   }
 
   // src/web/services/auth.ts
-  const LOGIN_URL = apiPath("login");
+  var LOGIN_URL = apiPath("login");
   async function tryLogin(password) {
     try {
       const access = await fetch(LOGIN_URL, {
@@ -190,6 +190,6 @@ var __page = (() => {
     }
     return false;
   }
-  const LOGOUT_URL = apiPath("logout");
+  var LOGOUT_URL = apiPath("logout");
   return require_login();
 })();

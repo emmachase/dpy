@@ -18,19 +18,19 @@ var __page = (() => {
     for (var name in all)
       __defProp(target, name, {get: all[name], enumerable: true});
   };
-  var __exportStar = (target, module) => {
+  var __exportStar = (target, module, desc) => {
     __markAsModule(target);
-    if (typeof module === "object" || typeof module === "function") {
+    if (module && typeof module === "object" || typeof module === "function") {
       for (let key of __getOwnPropNames(module))
         if (!__hasOwnProp.call(target, key) && key !== "default")
-          __defProp(target, key, {get: () => module[key], enumerable: __getOwnPropDesc(module, key).enumerable});
+          __defProp(target, key, {get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable});
     }
     return target;
   };
   var __toModule = (module) => {
     if (module && module.__esModule)
       return module;
-    return __exportStar(__defProp(__create(__getProtoOf(module)), "default", {value: module, enumerable: true}), module);
+    return __exportStar(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", {value: module, enumerable: true}), module);
   };
 
   // node_modules/.pnpm/react-is@16.13.1/node_modules/react-is/cjs/react-is.development.js
@@ -2607,8 +2607,8 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     __export(exports, {
       default: () => gallery_default
     });
-    const react5 = __toModule(require("react"));
-    const pageRoot = ({appParams}) => {
+    var react5 = __toModule(require("react"));
+    var pageRoot = ({appParams}) => {
       const images = [
         {},
         {},
@@ -2648,21 +2648,21 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   });
 
   // src/util/poly.ts
-  const as = (value) => value;
+  var as = (value) => value;
 
   // src/web/components/app/navbar.tsx
-  const react2 = __toModule(require("react"));
-  const react_hamburger_menu = __toModule(require_HamburgerMenu());
+  var react2 = __toModule(require("react"));
+  var react_hamburger_menu = __toModule(require_HamburgerMenu());
 
   // src/web/services/api.ts
-  const API_ROOT = "/api";
+  var API_ROOT = "/api";
   function apiPath(endpoint) {
     return API_ROOT + "/" + endpoint;
   }
 
   // src/web/services/auth.ts
-  const LOGIN_URL = apiPath("login");
-  const LOGOUT_URL = apiPath("logout");
+  var LOGIN_URL = apiPath("login");
+  var LOGOUT_URL = apiPath("logout");
   async function doLogout() {
     localStorage.removeItem("accessToken");
     try {
@@ -2677,7 +2677,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   }
 
   // src/web/components/layout/utils.ts
-  const react = __toModule(require("react"));
+  var react = __toModule(require("react"));
   function clazz(...classes) {
     return Array.from(new Set(classes.flat().filter((x) => x))).join(" ");
   }
@@ -2717,7 +2717,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   }
 
   // src/web/components/app/navbar.tsx
-  const navPages = [
+  var navPages = [
     ["GALLERY", "/gallery"],
     ["LIST", "/list"],
     ["LINKS", "/links"],
@@ -2727,7 +2727,7 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
     await doLogout();
     window.location.href = "/login";
   }
-  const NavBar = (props) => {
+  var NavBar = (props) => {
     const shouldMenu = useMediaQuery("(max-width: 550px)");
     const [menuOpen, setMenuOpen] = react2.useState(false);
     react2.useEffect(() => {
@@ -2762,17 +2762,17 @@ https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_liter
   };
 
   // src/web/components/layout/grid.tsx
-  const react3 = __toModule(require("react"));
-  const Grid = (props) => {
+  var react3 = __toModule(require("react"));
+  var Grid = (props) => {
     return /* @__PURE__ */ react3.default.createElement("div", {
       className: "grid"
     }, props.children);
   };
 
   // src/web/components/app/card.tsx
-  const react4 = __toModule(require("react"));
-  const react_loading_skeleton = __toModule(require_lib());
-  const Card = (props) => {
+  var react4 = __toModule(require("react"));
+  var react_loading_skeleton = __toModule(require_lib());
+  var Card = (props) => {
     return /* @__PURE__ */ react4.default.createElement("div", {
       className: "im-card"
     }, props.children || /* @__PURE__ */ react4.default.createElement(react_loading_skeleton.default, null));

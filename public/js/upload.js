@@ -18,19 +18,19 @@ var __page = (() => {
     for (var name in all)
       __defProp(target, name, {get: all[name], enumerable: true});
   };
-  var __exportStar = (target, module) => {
+  var __exportStar = (target, module, desc) => {
     __markAsModule(target);
-    if (typeof module === "object" || typeof module === "function") {
+    if (module && typeof module === "object" || typeof module === "function") {
       for (let key of __getOwnPropNames(module))
         if (!__hasOwnProp.call(target, key) && key !== "default")
-          __defProp(target, key, {get: () => module[key], enumerable: __getOwnPropDesc(module, key).enumerable});
+          __defProp(target, key, {get: () => module[key], enumerable: !(desc = __getOwnPropDesc(module, key)) || desc.enumerable});
     }
     return target;
   };
   var __toModule = (module) => {
     if (module && module.__esModule)
       return module;
-    return __exportStar(__defProp(__create(__getProtoOf(module)), "default", {value: module, enumerable: true}), module);
+    return __exportStar(__defProp(module != null ? __create(__getProtoOf(module)) : {}, "default", {value: module, enumerable: true}), module);
   };
 
   // node_modules/.pnpm/react-is@16.13.1/node_modules/react-is/cjs/react-is.development.js
@@ -840,8 +840,8 @@ var __page = (() => {
     __export(exports, {
       default: () => upload_default
     });
-    const react8 = __toModule(require("react"));
-    const FormEntry = (props) => {
+    var react8 = __toModule(require("react"));
+    var FormEntry = (props) => {
       return /* @__PURE__ */ react8.default.createElement("div", {
         className: "form-entry"
       }, /* @__PURE__ */ react8.default.createElement(Flex, {
@@ -855,7 +855,7 @@ var __page = (() => {
         multiline: props.area
       }));
     };
-    const pageRoot = ({appParams}) => {
+    var pageRoot = () => {
       return /* @__PURE__ */ react8.default.createElement(react8.default.Fragment, null, /* @__PURE__ */ react8.default.createElement(NavBar, {
         activePage: "UPLOAD"
       }), /* @__PURE__ */ react8.default.createElement("div", {
@@ -876,7 +876,8 @@ var __page = (() => {
       }, /* @__PURE__ */ react8.default.createElement(FormEntry, {
         name: "name",
         label: "Filename",
-        placeholder: "shapes.png"
+        placeholder: "shapes.png",
+        optional: true
       }), /* @__PURE__ */ react8.default.createElement(FormEntry, {
         name: "description",
         label: "Description",
@@ -892,6 +893,7 @@ var __page = (() => {
         className: "submit"
       }, /* @__PURE__ */ react8.default.createElement(Flex.Child, null), /* @__PURE__ */ react8.default.createElement(TaskButton, {
         task: async () => {
+          console.log("TODO: Upload");
         }
       }, "Upload")))))), /* @__PURE__ */ react8.default.createElement(PageAccent, null));
     };
@@ -904,21 +906,21 @@ var __page = (() => {
   });
 
   // src/util/poly.ts
-  const as = (value) => value;
+  var as = (value) => value;
 
   // src/web/components/app/navbar.tsx
-  const react2 = __toModule(require("react"));
-  const react_hamburger_menu = __toModule(require_HamburgerMenu());
+  var react2 = __toModule(require("react"));
+  var react_hamburger_menu = __toModule(require_HamburgerMenu());
 
   // src/web/services/api.ts
-  const API_ROOT = "/api";
+  var API_ROOT = "/api";
   function apiPath(endpoint) {
     return API_ROOT + "/" + endpoint;
   }
 
   // src/web/services/auth.ts
-  const LOGIN_URL = apiPath("login");
-  const LOGOUT_URL = apiPath("logout");
+  var LOGIN_URL = apiPath("login");
+  var LOGOUT_URL = apiPath("logout");
   async function doLogout() {
     localStorage.removeItem("accessToken");
     try {
@@ -933,7 +935,7 @@ var __page = (() => {
   }
 
   // src/web/components/layout/utils.ts
-  const react = __toModule(require("react"));
+  var react = __toModule(require("react"));
   function clazz(...classes) {
     return Array.from(new Set(classes.flat().filter((x) => x))).join(" ");
   }
@@ -973,7 +975,7 @@ var __page = (() => {
   }
 
   // src/web/components/app/navbar.tsx
-  const navPages = [
+  var navPages = [
     ["GALLERY", "/gallery"],
     ["LIST", "/list"],
     ["LINKS", "/links"],
@@ -983,7 +985,7 @@ var __page = (() => {
     await doLogout();
     window.location.href = "/login";
   }
-  const NavBar = (props) => {
+  var NavBar = (props) => {
     const shouldMenu = useMediaQuery("(max-width: 550px)");
     const [menuOpen, setMenuOpen] = react2.useState(false);
     react2.useEffect(() => {
@@ -1018,11 +1020,44 @@ var __page = (() => {
   };
 
   // src/web/components/img/uploadbox.tsx
-  const react3 = __toModule(require("react"));
-  const UploadBox = (props) => {
+  var react3 = __toModule(require("react"));
+
+  // src/util/promise.ts
+  function promisifyUnary(fn) {
+    return new Promise((resolve) => fn(resolve));
+  }
+
+  // src/web/components/img/uploadbox.tsx
+  var DisplayType;
+  (function(DisplayType2) {
+    DisplayType2[DisplayType2["WAITING"] = 0] = "WAITING";
+    DisplayType2[DisplayType2["IMAGE"] = 1] = "IMAGE";
+    DisplayType2[DisplayType2["FILE"] = 2] = "FILE";
+  })(DisplayType || (DisplayType = {}));
+  var loadingImage = "data:image/svg+xml,%3Csvg width='140' height='20' viewBox='0 0 140 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='10' fill='white'/%3E%3Ccircle cx='50' cy='10' r='10' fill='white'/%3E%3Ccircle cx='130' cy='10' r='10' fill='white'/%3E%3Ccircle cx='90' cy='10' r='10' fill='white'/%3E%3C/svg%3E%0A";
+  var UploadBox = (props) => {
     const dragCounter = react3.useRef(0), dragTarget = react3.useRef(null);
+    const [fileState, setFileState] = react3.useState(0);
+    const [heldFile, setFile] = react3.useState(null);
     const [dragging, setDragging] = react3.useState(false);
     const [dropping, setDropping] = react3.useState(false);
+    const processFile = (file) => {
+      if (file) {
+        setFileState(file.type.startsWith("image") ? 1 : 2);
+        setFile(file);
+      } else {
+        setFileState(0);
+        setFile(null);
+      }
+    };
+    const handleClick = () => {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.click();
+      input.addEventListener("input", () => {
+        processFile(input.files?.[0]);
+      });
+    };
     const handleDragIn = (e) => {
       e.preventDefault();
       e.stopPropagation();
@@ -1043,9 +1078,23 @@ var __page = (() => {
       if (!dragTarget.current)
         return;
       if (e.composedPath().includes(dragTarget.current)) {
+        e.preventDefault();
         setDropping(true);
       } else {
         setDropping(false);
+      }
+    };
+    const handleDrop = async (e) => {
+      if (e.dataTransfer?.items?.length ?? 0 > 0) {
+        e.preventDefault();
+        setDragging(false);
+        setDropping(false);
+        setPreview("");
+        const item = e.dataTransfer.items[0];
+        const file = item.getAsFile() ?? new File([await promisifyUnary(item.getAsString.bind(item))], "string.txt", {
+          type: item.type
+        });
+        processFile(file);
       }
     };
     react3.useEffect(() => {
@@ -1058,79 +1107,289 @@ var __page = (() => {
         document.removeEventListener("dragover", handleDragOver);
       };
     }, []);
-    return /* @__PURE__ */ react3.default.createElement("svg", {
-      className: "uploadbox",
-      ref: dragTarget,
-      viewBox: "0 0 480 480",
-      fill: "none",
-      xmlns: "http://www.w3.org/2000/svg"
-    }, /* @__PURE__ */ react3.default.createElement("path", {
-      strokeDasharray: dragging ? 16 : void 0,
-      d: "M32 50H429V447C429 463.569 415.569 477 399 477H32C15.4315 477 2 463.569 2 447V80C2 63.4315 15.4315 50 32 50Z",
-      fill: "#AAAAAA",
-      fillOpacity: (dropping ? 0.2 : 0) + (dragging ? 0.1 : 0),
-      stroke: "#AAAAAA",
-      strokeWidth: "4"
-    }), /* @__PURE__ */ react3.default.createElement("rect", {
-      x: "427",
-      width: "53",
-      height: "97",
-      fill: "white"
-    }), /* @__PURE__ */ react3.default.createElement("rect", {
-      x: "383",
-      width: "97",
-      height: "52",
-      fill: "white"
-    }), /* @__PURE__ */ react3.default.createElement("line", {
-      x1: "429",
-      y1: "13",
-      x2: "429",
-      y2: "84",
-      stroke: "#AAAAAA",
-      strokeWidth: "4"
-    }), /* @__PURE__ */ react3.default.createElement("line", {
-      x1: "392",
-      y1: "50",
-      x2: "464",
-      y2: "50",
-      stroke: "#AAAAAA",
-      strokeWidth: "4"
-    }), /* @__PURE__ */ react3.default.createElement("path", {
-      visibility: dragging ? "hidden" : void 0,
-      d: "M169.101 232.5L215 153L260.899 232.5H169.101Z",
-      stroke: "#AAAAAA",
-      strokeWidth: "4"
-    }), /* @__PURE__ */ react3.default.createElement("circle", {
-      visibility: dragging ? "hidden" : void 0,
-      cx: "286",
-      cy: "313",
-      r: "48",
-      stroke: "#AAAAAA",
-      strokeWidth: "4"
-    }), /* @__PURE__ */ react3.default.createElement("rect", {
-      visibility: dragging ? "hidden" : void 0,
-      x: "96",
-      y: "265",
-      width: "96",
-      height: "96",
-      stroke: "#AAAAAA",
-      strokeWidth: "4"
-    }), dragging && /* @__PURE__ */ react3.default.createElement("text", {
-      x: "214",
-      y: "275",
-      fill: "#000000",
-      style: {
-        fontSize: "32px",
-        fontWeight: 400,
-        opacity: 0.35,
-        textAnchor: "middle"
+    const [preview, setPreview] = react3.useState("");
+    react3.useMemo(() => {
+      if (heldFile && fileState === 1) {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => setPreview(reader.result));
+        reader.readAsDataURL(heldFile);
+      } else {
+        setPreview("");
       }
-    }, "Drop here to upload"));
+    }, [heldFile]);
+    const displayState = dragging ? 0 : fileState;
+    switch (displayState) {
+      case 0:
+        return /* @__PURE__ */ react3.default.createElement("svg", {
+          onClick: handleClick,
+          onDrop: handleDrop,
+          className: "uploadbox waiting",
+          ref: dragTarget,
+          viewBox: "0 0 480 480",
+          fill: "none",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /* @__PURE__ */ react3.default.createElement("path", {
+          className: "clickable",
+          strokeDasharray: dragging ? 16 : void 0,
+          d: "M32 50H429V447C429 463.569 415.569 477 399 477H32C15.4315 477 2 463.569 2 447V80C2 63.4315 15.4315 50 32 50Z",
+          fill: "#AAAAAA",
+          fillOpacity: (dropping ? 0.2 : 0) + (dragging ? 0.1 : 0),
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "427",
+          width: "53",
+          height: "97",
+          fill: "white"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "383",
+          width: "97",
+          height: "52",
+          fill: "white"
+        }), /* @__PURE__ */ react3.default.createElement("line", {
+          x1: "429",
+          y1: "13",
+          x2: "429",
+          y2: "84",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("line", {
+          x1: "392",
+          y1: "50",
+          x2: "464",
+          y2: "50",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("path", {
+          visibility: dragging ? "hidden" : void 0,
+          d: "M169.101 232.5L215 153L260.899 232.5H169.101Z",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("circle", {
+          visibility: dragging ? "hidden" : void 0,
+          cx: "286",
+          cy: "313",
+          r: "48",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          visibility: dragging ? "hidden" : void 0,
+          x: "96",
+          y: "265",
+          width: "96",
+          height: "96",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), dragging && /* @__PURE__ */ react3.default.createElement("text", {
+          x: "214",
+          y: "275",
+          fill: "#000000",
+          style: {
+            fontSize: "32px",
+            fontWeight: 400,
+            opacity: 0.35,
+            textAnchor: "middle"
+          }
+        }, "Drop here to upload"));
+      case 2:
+        return /* @__PURE__ */ react3.default.createElement("svg", {
+          className: "uploadbox",
+          viewBox: "0 0 480 480",
+          fill: "none",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /* @__PURE__ */ react3.default.createElement("svg", {
+          y: "50"
+        }, /* @__PURE__ */ react3.default.createElement("path", {
+          d: "M2 32C2 15.4315 15.4315 2 32 2H399C415.569 2 429 15.4315 429 32V399C429 415.569 415.569 429 399 429H32C15.4315 429 2 415.569 2 399V32Z",
+          fill: "#AAAAAA",
+          fillOpacity: "0.7",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "90",
+          y: "112",
+          width: "252",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "90",
+          y: "211",
+          width: "252",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "90",
+          y: "310",
+          width: "252",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "90",
+          y: "244",
+          width: "190",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "90",
+          y: "277",
+          width: "64",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "164",
+          y: "277",
+          width: "178",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "90",
+          y: "145",
+          width: "129",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "229",
+          y: "145",
+          width: "113",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "90",
+          y: "178",
+          width: "92",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "192",
+          y: "178",
+          width: "103",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "305",
+          y: "178",
+          width: "37",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "290",
+          y: "244",
+          width: "52",
+          height: "8",
+          fill: "white",
+          fillOpacity: "0.8"
+        }), /* @__PURE__ */ react3.default.createElement("foreignObject", {
+          x: "4",
+          y: "350",
+          width: "423",
+          height: "45"
+        }, /* @__PURE__ */ react3.default.createElement("span", {
+          title: heldFile?.name,
+          style: {
+            display: "block",
+            color: "white",
+            padding: "0 24px",
+            fontSize: "36px",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+            textAlign: "center"
+          }
+        }, heldFile?.name))), /* @__PURE__ */ react3.default.createElement("svg", {
+          className: "close-btn",
+          onClick: () => (setFile(null), setFileState(0))
+        }, /* @__PURE__ */ react3.default.createElement("circle", {
+          cx: "411",
+          cy: "70",
+          r: "33",
+          fill: "#C4C4C4",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "396.5",
+          y: "81.73",
+          width: "37",
+          height: "4",
+          transform: "rotate(-45 396.5 81.73)",
+          fill: "white"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "399.329",
+          y: "55.5668",
+          width: "37",
+          height: "4",
+          transform: "rotate(45 399.329 55.5668)",
+          fill: "white"
+        })));
+      case 1:
+        return /* @__PURE__ */ react3.default.createElement("svg", {
+          className: "uploadbox",
+          viewBox: "0 0 480 480",
+          fill: "none",
+          xmlns: "http://www.w3.org/2000/svg"
+        }, /* @__PURE__ */ react3.default.createElement("svg", {
+          y: "50"
+        }, /* @__PURE__ */ react3.default.createElement("path", {
+          d: "M32 2H399C415.569 2 429 15.4315 429 32V399C429 415.569 415.569 429 399 429H32C15.4315 429 2 415.569 2 399V32C2 15.4315 15.4315 2 32 2Z",
+          fill: "#AAAAAA",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("foreignObject", {
+          x: "4",
+          y: "4",
+          width: "423",
+          height: "422"
+        }, /* @__PURE__ */ react3.default.createElement("img", {
+          draggable: "false",
+          src: preview || loadingImage,
+          style: {
+            objectFit: "cover",
+            borderRadius: 28,
+            userSelect: "none"
+          },
+          width: "423",
+          height: "422"
+        }))), /* @__PURE__ */ react3.default.createElement("svg", {
+          className: "close-btn",
+          onClick: () => (setFile(null), setFileState(0))
+        }, /* @__PURE__ */ react3.default.createElement("circle", {
+          cx: "411",
+          cy: "70",
+          r: "33",
+          fill: "#C4C4C4",
+          stroke: "#AAAAAA",
+          strokeWidth: "4"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "396.5",
+          y: "81.73",
+          width: "37",
+          height: "4",
+          transform: "rotate(-45 396.5 81.73)",
+          fill: "white"
+        }), /* @__PURE__ */ react3.default.createElement("rect", {
+          x: "399.329",
+          y: "55.5668",
+          width: "37",
+          height: "4",
+          transform: "rotate(45 399.329 55.5668)",
+          fill: "white"
+        })));
+    }
   };
 
   // src/web/components/img/pageaccent.tsx
-  const react4 = __toModule(require("react"));
-  const PageAccent = (props) => {
+  var react4 = __toModule(require("react"));
+  var PageAccent = (props) => {
     return /* @__PURE__ */ react4.default.createElement("div", {
       className: "page-accent"
     }, /* @__PURE__ */ react4.default.createElement("svg", {
@@ -1147,8 +1406,8 @@ var __page = (() => {
   };
 
   // src/web/components/layout/flex.tsx
-  const react5 = __toModule(require("react"));
-  const Flex = (props) => /* @__PURE__ */ react5.default.createElement("div", {
+  var react5 = __toModule(require("react"));
+  var Flex = (props) => /* @__PURE__ */ react5.default.createElement("div", {
     className: props.className,
     style: {
       display: "flex",
@@ -1169,8 +1428,8 @@ var __page = (() => {
   };
 
   // src/web/components/input/text.tsx
-  const react6 = __toModule(require("react"));
-  const TextField = (props) => {
+  var react6 = __toModule(require("react"));
+  var TextField = (props) => {
     const controlProps = {
       autoFocus: props.autofocus,
       type: props.type ?? "text",
@@ -1188,8 +1447,8 @@ var __page = (() => {
   };
 
   // src/web/components/input/taskbutton.tsx
-  const react7 = __toModule(require("react"));
-  const TaskButton = (props) => {
+  var react7 = __toModule(require("react"));
+  var TaskButton = (props) => {
     const [loading, setLoading] = react7.useState(false);
     const [hideLoading, setHideLoading] = react7.useState(true);
     const handleClick = async () => {

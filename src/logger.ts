@@ -29,8 +29,8 @@ export class Logger {
      * - `track` indicates whether the log should include numbered traces
      */
     private logbase(config: {
-        level: LogLevel,
-        color: Chalk,
+        level: LogLevel
+        color: Chalk
         track?: boolean
     }) {
         return (...msg: unknown[]) => {
