@@ -209,11 +209,15 @@ export interface BearerRequest extends Request {
 
 function requireBearer(req: BearerRequest, res: Response, next: NextFunction): void {
     if (req.headers.authorization) {
+        logger.trace("bearer auth extraction");
+
         const parts = req.headers.authorization.split(" ");
         if (parts.length === 2 && parts[0] === "Bearer") {
             req.bearer = parts[1];
             return next();
         }
+
+        logger.debug("bearer auth extraction failure", parts);
     }
 
     return void res.sendStatus(401);
@@ -262,12 +266,14 @@ export async function checkAuthed(req: AuthCheckRequest, res: Response, next: Ne
 export function requireAccessToken(req: BearerRequest, res: Response, next: NextFunction): void {
     requireBearer(req, res, () => {
         try {
+            logger.trace("bearer auth validation");
             jwt.verify(req.bearer, jwtSecret, {
                 audience: JWT_AUD.ACCESS
             });
 
             next();
-        } catch {
+        } catch (e) {
+            logger.debug("bearer auth validation failure:", e);
             return void res.sendStatus(401);
         }
     });

@@ -19,6 +19,7 @@ export interface PageMeta {
     pageTitle: string | ((params: AppParams) => string)
     root: PageRootComponent
     needsAuth: boolean
+    redirWhenAuthed?: boolean
 }
 
 // const cssFiller = fs.readFileSync("./public/styles.css"); // TODO currently not used because of watch modes
@@ -45,6 +46,7 @@ export default function(config: SiteConfig, ctx: PageMeta): string {
             <link rel="icon" href="favicon.png">
             <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap" rel="stylesheet">
             <style>${fs.readFileSync("./public/styles.css").toString("ascii")}</style>
+
             ${ctx.needsAuth ? /*html*/`
                 <script>
                     if (!localStorage.getItem("accessToken")) {
@@ -52,6 +54,14 @@ export default function(config: SiteConfig, ctx: PageMeta): string {
                     }
                 </script>
             ` : ""}
+
+            ${ctx.redirWhenAuthed ? /*html*/`
+                <script>
+                    if (localStorage.getItem("accessToken")) {
+                        window.location.href = "/gallery";
+                    }
+                </script>
+            `: ""}
         </head>
         <body>
             <div id="approot">${ReactDOMServer.renderToString(<ctx.root appParams={params}/>)}</div>

@@ -9,7 +9,10 @@
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,
         "jsx": "react",
-        "outDir": "build"
+        "outDir": "build",
+        "types": ["node"],
+        "skipLibCheck": true
     },
-    "include": ["src/**/*.ts", "src/web/**/*.ts", "src/web/**/*.tsx"]
+    "include": ["src/**/*.ts", "src/web/**/*.ts", "src/web/**/*.tsx"],
+    "exclude": ["node_modules/"]
 }

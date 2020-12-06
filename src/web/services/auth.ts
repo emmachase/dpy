@@ -14,6 +14,7 @@ export async function tryLogin(password: string): Promise<boolean> {
         if (access.ok) {
             const rjson = await access.json();
             if (rjson.accessToken) {
+                console.log(rjson.accessToken);
                 localStorage.setItem("accessToken", rjson.accessToken);
 
                 return true;

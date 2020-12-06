@@ -9,6 +9,26 @@ export function clazz(...classes: (string | boolean | string[] | undefined)[]): 
 }
 
 /**
+ * Computes the client position of an element without considering transformations
+ */
+export function computePlainPosition(el: HTMLElement): {x: number, y: number} {
+    let offsetLeft = 0;
+    let offsetTop  = 0;
+
+    do {
+        offsetLeft += el.offsetLeft;
+        offsetTop  += el.offsetTop;
+
+        el = el.offsetParent as HTMLElement;
+    } while( el );
+
+    return {
+        x: offsetLeft,
+        y: offsetTop
+    };
+}
+
+/**
  * React Hook which hooks onto a CSS media query.
  * @param queryInput Any valid CSS media query (e.g. "(max-width: 600px)")
  * @param options The important option is `defaultMatches`, use this to specify correct

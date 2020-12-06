@@ -8,3 +8,13 @@ export function timeFromNow(delta: number): Date {
     const now = +new Date();
     return new Date(now + delta);
 }
+
+export function formatDatetime(date: Date): string {
+    const g = (field: number, len=2) => {
+        return field.toString().padStart(len, "0");
+    };
+
+    const fst = `${g(date.getUTCFullYear(), 4)}-${g(date.getUTCMonth()+1)}-${g(date.getUTCDate())}`;
+    const snd = `${g(date.getUTCHours())}:${g(date.getUTCMinutes())}:${g(date.getUTCSeconds())}`;
+    return fst + " " + snd;
+}

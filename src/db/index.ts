@@ -1,14 +1,16 @@
 import "reflect-metadata";
-import {Connection, createConnection} from "typeorm";
+import {Connection, createConnection, getConnectionOptions} from "typeorm";
 import { Logger } from "../logger";
 import { Upload } from "./entity/Upload";
+import express from "../webserver";
 
 const logger = new Logger("db");
 
 // const getConnectionQueue: (() => void)[] = [];
 export let connection: Connection;
 export async function initialize(): Promise<void> {
-    connection = await createConnection();
+    const options = await getConnectionOptions(express.get("env"));
+    connection = await createConnection({ ...options, name: "default" });
 
     logger.info("Database connection initialized");
     // getConnectionQueue.forEach(x => x());

@@ -1,6 +1,7 @@
-{
+[{
+    "name": "development",
     "type": "sqlite",
-    "database": "database.sqlite",
+    "database": "dev-database.sqlite",
     "synchronize": true,
     "logging": "all",
     "entities": [
@@ -17,4 +18,25 @@
         "migrationsDir": "src/db/migration",
         "subscribersDir": "src/db/subscriber"
     }
-}
+},
+{
+    "name": "production",
+    "type": "sqlite",
+    "database": "database.sqlite",
+    "synchronize": true,
+    "logging": "all",
+    "entities": [
+        "build/db/entity/**/*.js"
+    ],
+    "migrations": [
+        "build/db/migration/**/*.js"
+    ],
+    "subscribers": [
+        "build/db/subscriber/**/*.js"
+    ],
+    "cli": {
+        "entitiesDir": "build/db/entity",
+        "migrationsDir": "build/db/migration",
+        "subscribersDir": "build/db/subscriber"
+    }
+}]

@@ -2,5 +2,6 @@ build
 node_modules
 config.toml
 database.sqlite
+dev-database.sqlite
 images/
 public/

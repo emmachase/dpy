@@ -9,8 +9,11 @@ import { clearOldTokens } from "./api/auth";
 import WebRouter from "./web/router";
 import APIRouter from "./api";
 import { HOURS } from "./util/time";
+import { ImageRouter } from "./imagehost";
 
 const logger = new Logger("main");
+
+express.enable("trust proxy"); // Allow forwarded https
 
 void getConfig().then(config =>
     initDB().then(async () => {
@@ -20,6 +23,9 @@ void getConfig().then(config =>
 
         express.use(WebRouter);
         express.use("/api", APIRouter);
+
+        // The main gal
+        express.use(ImageRouter);
 
         express.listen(config.server.listen, () =>
             logger.info("Server started and listening on port", chalk.yellow(config.server.listen)));

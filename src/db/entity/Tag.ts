@@ -7,7 +7,7 @@ export class Tag {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @ManyToOne(() => Upload, upload => upload.tags)
+    @ManyToOne(() => Upload, upload => upload.tags, {nullable: false})
     upload: Upload;
 
     @Column()

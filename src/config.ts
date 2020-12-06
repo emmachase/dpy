@@ -4,6 +4,7 @@ import inquirer from "inquirer";
 import { readFileSync, writeFileSync, readdirSync } from "fs";
 import { Logger, LogLevel } from "./logger";
 import { hashPassword, randomByteString } from "./util/crypto";
+import merge from "lodash/merge";
 
 let logger: Logger;
 
@@ -221,6 +222,9 @@ async function fetchConfig(): Promise<DumpyConfig> {
         config = config.toString("ascii");
         try {
             config = toml.parse(config);
+
+            // Make sure that we have defaults
+            config = merge(defaultConfig, config);
         } catch (e) {
             console.error(chalk.red(chalk.bold("ERROR:"),
                 "Config Parsing error on",

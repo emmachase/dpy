@@ -43,6 +43,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
 
 export default as<PageMeta>({
     needsAuth: false,
+    redirWhenAuthed: true,
     fileName: "login",
     pageTitle: (ctx) => ctx.title + " - Login",
     root: pageRoot
