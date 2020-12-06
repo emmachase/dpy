@@ -24,7 +24,6 @@
     "type": "sqlite",
     "database": "database.sqlite",
     "synchronize": true,
-    "logging": "all",
     "entities": [
         "build/db/entity/**/*.js"
     ],
