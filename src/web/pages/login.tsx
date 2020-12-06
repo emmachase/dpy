@@ -9,8 +9,11 @@ import { tryLogin } from "../services/auth";
 const pageRoot: PageRootComponent = ({appParams}) => {
     const [invalid, setInvalid] = useState(false);
     const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
     const loginTask = async () => {
+        setLoading(true);
         const success = await tryLogin(password);
+        setLoading(false);
 
         if (success) {
             window.location.href = "/gallery";
@@ -31,9 +34,9 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                 <div className="login-container">
                     <h1>{appParams.title}</h1>
                     {appParams.subtitle && <h3>{appParams.subtitle}</h3>}
-                    <TextField type="password" placeholder="password" error={invalid}
+                    <TextField type="password" placeholder="password" error={invalid} onConfirm={loginTask}
                         value={password} onChange={(p) => setPassword(p)} autofocus/>
-                    <TaskButton className="wide margin" task={loginTask}>Login</TaskButton>
+                    <TaskButton className="wide margin" task={loginTask} disabled={loading}>Login</TaskButton>
                     {appParams.notice && <aside className="thick">{appParams.notice}</aside>}
                 </div>
             </Flex>

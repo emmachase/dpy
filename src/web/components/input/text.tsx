@@ -9,6 +9,7 @@ export const TextField: FC<{
     onChange?: (x: string) => void
     autofocus?: boolean
     multiline?: boolean
+    onConfirm?: (x: string) => void
 }> = (props) => {
     const controlProps = {
         autoFocus: props.autofocus,
@@ -16,6 +17,11 @@ export const TextField: FC<{
         placeholder: props.placeholder,
         onChange: (t: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => props.onChange?.(t.target.value),
         value: props.value,
+        onKeyPress: (e: React.KeyboardEvent) => {
+            if (e.key === "Enter") {
+                props.onConfirm?.((e.target as HTMLInputElement).value);
+            }
+        }
     };
 
     return (

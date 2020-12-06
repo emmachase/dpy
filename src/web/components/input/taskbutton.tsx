@@ -21,7 +21,7 @@ export const TaskButton: FC<{
     };
 
     return (
-        <button className={clazz("button", loading && "loading", hideLoading && "hide-load", props.className)}
+        <button className={clazz("button", (props.disabled || loading) && "loading", hideLoading && "hide-load", props.className)}
             disabled={props.disabled || loading}
             onClick={handleClick}
         >
