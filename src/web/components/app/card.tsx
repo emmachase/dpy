@@ -25,24 +25,7 @@ export const Card: FC<{
     hide?: boolean
 }> = (props) => {
     const [bigView, setBigView] = useState(false);
-
-    // const imref = useRef<HTMLImageElement>(null);
     const [imLoaded, setLoaded] = useState(false);
-    // useEffect(() => {
-    //     console.log("helo2", props);
-    //     if (!props.url) return;
-
-    //     const im = imref.current;
-    //     if (!im) return;
-
-    //     console.log("helo");
-
-    //     im.src = props.url + "?size=200";
-    //     im.onload = () => {
-    //         console.log("yea");
-    //         setLoaded(true);
-    //     };
-    // }, [imref.current, props.url]);
 
     const calc = (t: HTMLDivElement, x: number, y: number, h: boolean) => {
         const r = t.getBoundingClientRect();
@@ -121,18 +104,16 @@ export const Card: FC<{
 
         if (dims.current.w !== 0 && !isThumb) {
             // Big load
-            console.log(img.src);
+
             // TODO: This is an issue caused by the element being recreated
             // as "big" and position: fixed which alters the position unnecessarily;
             // there should be a better way to fix this, but the element seems to be
             // limited in terms of state at this point in the computation.
-            console.log(img.className);
             if (img.className === "big") return;
             // const rect = img.parentElement!.getBoundingClientRect();
             // const trueLeft = (rect.left + rect.width/2) - 160/2;
             // const trueTop = (rect.top + rect.height/2) - 160/2;
             const {x: trueLeft, y: trueTop} = computePlainPosition(img.parentElement!);
-            console.log("Original", trueTop, trueTop - window.scrollY);
             trueBackPosition.current = [trueLeft, trueTop - window.scrollY, window.scrollY];
 
             set({ xys: [0, 0, 1] });
@@ -232,7 +213,6 @@ export const Card: FC<{
 
                     setReturning(true);
                     setTimeout(() => {
-                        console.log("hlelojiojojiojioj");
                         setBigView(false);
                         setReturning(false);
                         setThumb(true);

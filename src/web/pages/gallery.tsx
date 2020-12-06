@@ -19,7 +19,6 @@ const pageRoot: PageRootComponent = ({appParams}) => {
 
     const fetchData = async () => {
         setLoading(true);
-        console.log("hi");
         const newImages = await fetchImages(+images[images.length - 1]?.id);
         if (newImages.length === 0) setDone(true);
         setImages(images.concat(newImages));
@@ -29,18 +28,11 @@ const pageRoot: PageRootComponent = ({appParams}) => {
     const scrollable = typeof window === "object" ? useIsScrollable([images]) : true;
     useEffect(() => {
         if (loading) return;
-        console.log(scrollable);
 
         if (!scrollable && !done) {
             void fetchData();
         }
     }, [loading, scrollable, done]);
-    // useEffect(() => {
-    //     fetchImages().then(newImages => {
-    //         console.log(newImages);
-    //         setImages(newImages);
-    //     }).catch(console.error);
-    // }, []);
 
     return (<>
         <NavBar activePage="GALLERY"/>

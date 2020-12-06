@@ -12,23 +12,10 @@ export const ListRouter = Router();
 const DEFAULT_LIMIT = 30;
 
 ListRouter.get("/list", requireAccessToken, async (req, res) => {
-    // let before: Date;
-    // const beforeTime = +req.query.before!;
-    // console.log(req.query.before);
-    // if (isNaN(beforeTime)) {
-    //     before = new Date();
-    // } else {
-    //     before = new Date(beforeTime);
-    // }
     const before = implies(req.query.before, parseInt);
-
-    console.log(before);
-
     const limit = +(req.query.limit ?? DEFAULT_LIMIT);
-
     const mime_filter = req.query.mfilter;
 
-    console.log(req.query);
     const results = await connection.manager.find(Upload,
         {
             take: limit,
