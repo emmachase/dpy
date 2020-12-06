@@ -7,8 +7,8 @@
   "author": "Emma",
   "license": "MIT",
   "scripts": {
-    "build": "./tools/compile-web.sh --production",
-    "build-dev": "./tools/compile-web.sh",
+    "build": "./tools/compile-web.sh --production && node tools/compile-css.mjs && tsc -p tsconfig.json",
+    "watch": "./tools/watcher.sh",
     "watch-svr": "pnpx ts-node-dev --transpile-only ./src/main.ts"
   },
   "devDependencies": {
