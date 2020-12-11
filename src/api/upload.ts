@@ -4,7 +4,7 @@ import { body } from "express-validator";
 import multer from "multer";
 import { getSiteConfig } from "../config";
 import { promisify } from "util";
-import { mkdir as mkdirNode } from "fs";
+import { mkdir as mkdirNode, unlink } from "fs";
 import path from "path";
 import { randomString36 } from "../util/crypto";
 import { Upload } from "../db/entity/Upload";
@@ -118,6 +118,7 @@ UploadRouter.post("/upload",
                     path.extname(req.file.filename));
         } catch (e) {
             if (e === TOO_MANY_TRIES) {
+                unlink(req.file.path, () => { /* We don't care if this fails */ });
                 return res.status(500).send({ ok: false, err: e });
             } else {
                 throw e;

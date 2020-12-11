@@ -1,6 +1,20 @@
 import { randomString36 } from "../util/crypto";
+import fs from "fs";
+import { promisify } from "util";
+const readFile = promisify(fs.readFile);
 
 class TemplateError extends Error {}
+
+const fileCache: Record<string, string[]> = {};
+async function getListFile(name: string): Promise<string[]> {
+    if (fileCache[name]) return fileCache[name];
+
+    const file = await readFile(name);
+    const contents = file.toString("ascii");
+    const lines = contents.split("\n");
+
+    return fileCache[name] = lines;
+}
 
 type TemplateFunction = (...args: string[]) => Promise<string>;
 const templateCommands: Record<string, TemplateFunction | undefined> = {
@@ -10,6 +24,13 @@ const templateCommands: Record<string, TemplateFunction | undefined> = {
         if (!count) throw new TemplateError("invalid count for chars template");
 
         return await randomString36(count);
+    },
+
+    async pick(filename) {
+        const list = await getListFile(filename);
+        return list[
+            Math.random()*list.length | 0
+        ];
     }
 
 };

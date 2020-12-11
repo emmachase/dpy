@@ -26,7 +26,4 @@ export async function initialize(): Promise<void> {
         persist.value = jwtSecret;
         await SecretRepository.save(persist);
     }
-
-    // const secretObj2 = await SecretRepository.findOne(SecretType.JWT);
-    // console.log(secretObj2);
 }
