@@ -37,6 +37,8 @@ export default function(config: SiteConfig, ctx: PageMeta): string {
         logo: config.logo
     };
 
+    const mode = process.env.NODE_ENV ?? "production";
+
     return /*html*/`<!DOCTYPE html>
         <html lang="en">
         <head>
@@ -65,8 +67,8 @@ export default function(config: SiteConfig, ctx: PageMeta): string {
         </head>
         <body>
             <div id="approot">${ReactDOMServer.renderToString(<ctx.root appParams={params}/>)}</div>
-            <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
-            <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+            <script crossorigin src="https://unpkg.com/react@17/umd/react.${mode}.js"></script>
+            <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.${mode}.js"></script>
             <script type="text/javascript">
                 const require = (name) => ({
                     react: React
