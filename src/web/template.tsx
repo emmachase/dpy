@@ -37,7 +37,8 @@ export default function(config: SiteConfig, ctx: PageMeta): string {
         logo: config.logo
     };
 
-    const mode = process.env.NODE_ENV ?? "production";
+    const mode = process.env.NODE_ENV === "development"
+        ? "development" : "production.min";
 
     return /*html*/`<!DOCTYPE html>
         <html lang="en">
