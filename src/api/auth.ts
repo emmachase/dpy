@@ -19,6 +19,12 @@ export enum JWT_AUD {
     UPLOAD = "up"
 }
 
+function generateUploadToken() {
+    return jwt.sign({}, jwtSecret, {
+        audience: JWT_AUD.UPLOAD
+    });
+}
+
 const ACCESS_LIFE = 15 * MINUTES;
 function generateAccessToken() {
     return jwt.sign({}, jwtSecret, {
@@ -176,6 +182,11 @@ AuthRouter.post("/refresh", async (req, res) => {
     } catch {
         return res.sendStatus(401);
     }
+});
+
+AuthRouter.get("/utoken", requireAccessToken, (_req, res) => {
+    const token = generateUploadToken();
+    return res.status(200).send({ ok: true, token });
 });
 
 /**
