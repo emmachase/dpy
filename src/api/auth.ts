@@ -334,10 +334,10 @@ export async function processDeleteToken(req: DeleteCheckRequest, res: Response,
         try {
             const token = jwt.verify(req.params.token, jwtSecret, {
                 audience: JWT_AUD.DELETE
-            }) as { aud: string };
+            }) as { sub: string };
 
-            const aud = parseInt(token.aud);
-            req.deleting = isNaN(aud) ? false : aud;
+            const sub = parseInt(token.sub);
+            req.deleting = isNaN(sub) ? false : sub;
         } catch (e) {
             logger.warn(chalk`delete requested with invalid token: {yellow ${e}}`);
         }

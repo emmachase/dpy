@@ -13,6 +13,7 @@ import { Tag } from "../db/entity/Tag";
 import { connection } from "../db";
 import uniq from "lodash/uniq";
 import { Logger } from "../logger";
+import { purgeCache } from "../imagehost";
 const mkdir = promisify(mkdirNode);
 
 const logger = new Logger("upload");
@@ -138,13 +139,16 @@ UploadRouter.post("/upload",
         const savedUpload = await connection.manager.save(upload);
         const deletionToken = await generateDeleteToken(savedUpload.id.toString());
 
+        const proxyHost = req.headers["x-forwarded-host"];
+        const host = proxyHost ? proxyHost : req.headers.host;
+
         res.status(200).send({
-            ok: true, url: `${req.protocol}://${req.hostname}/${upload.name}`,
-            del: `${req.protocol}://${req.hostname}/delete/${deletionToken}`
+            ok: true, url: `${req.protocol}://${host}/${upload.name}`,
+            del: `${req.protocol}://${host}/api/delete/${deletionToken}`
         });
     });
 
-UploadRouter.post("/delete/:token",
+UploadRouter.get("/delete/:token",
     processDeleteToken,
     async (req: DeleteCheckRequest, res) => {
         if (req.deleting === false) return;
@@ -154,15 +158,18 @@ UploadRouter.post("/delete/:token",
             return res.status(404).send({ ok: false, err: "Not Found" });
         }
 
-        const destination = path.dirname(upload.filePath);
+        const destination = path.join(path.dirname(upload.filePath), ".deleted");
         await mkdir(destination, { recursive: true });
 
-        rename(upload.filePath, destination + "/.deleted/" + path.basename(upload.filePath),
+        rename(upload.filePath, path.join(destination, path.basename(upload.filePath)),
             (e) => logger.warn(`Unable to move ${upload.filePath} to .deleted folder during deletion (${e}).`));
 
         // Remove from the database
         await connection.manager.getRepository(Tag).delete({ upload });
-        await connection.manager.getRepository(Upload).delete(upload);
+        await connection.manager.getRepository(Upload).delete({ id: upload.id });
+
+        // Purge the cache
+        purgeCache();
 
         res.status(200).send({ ok: true });
     });

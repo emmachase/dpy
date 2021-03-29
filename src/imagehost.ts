@@ -9,7 +9,7 @@ const readFile = promisify(nativeReadFile);
 export const ImageRouter = Router();
 
 const CACHE_SIZE = 50;
-const rollingCache: {
+let rollingCache: {
     name: string
     size: number | null
     file: Buffer
@@ -21,6 +21,10 @@ function insertIntoCache(name: string, size: number | null, file: Buffer, mime: 
     if (rollingCache.length > CACHE_SIZE) {
         rollingCache.pop();
     }
+}
+
+export function purgeCache(): void {
+    rollingCache = [];
 }
 
 ImageRouter.get("/:file", async (req, res, next) => {
