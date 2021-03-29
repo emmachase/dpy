@@ -16,7 +16,8 @@ export const AuthRouter = Router();
 export enum JWT_AUD {
     ACCESS = "acs",
     REFRESH = "new",
-    UPLOAD = "up"
+    UPLOAD = "up",
+    DELETE = "del",
 }
 
 function generateUploadToken() {
@@ -30,6 +31,14 @@ function generateAccessToken() {
     return jwt.sign({}, jwtSecret, {
         audience: JWT_AUD.ACCESS,
         expiresIn: ACCESS_LIFE
+    });
+}
+
+export async function generateDeleteToken(subject: string): Promise<string> {
+    return jwt.sign({}, jwtSecret, {
+        subject: subject,
+        audience: JWT_AUD.DELETE,
+        expiresIn: (await getConfig()).admin.deleteTimeout * MINUTES
     });
 }
 
@@ -311,4 +320,32 @@ export function requireUploadToken(req: BearerRequest, res: Response, next: Next
             }
         }
     });
+}
+
+export interface DeleteCheckRequest extends Request {
+    deleting: false | number
+}
+
+export async function processDeleteToken(req: DeleteCheckRequest, res: Response, next: NextFunction): Promise<void> {
+    logger.trace("delete check");
+    req.deleting = false;
+
+    if (req.params.token) {
+        try {
+            const token = jwt.verify(req.params.token, jwtSecret, {
+                audience: JWT_AUD.DELETE
+            }) as { aud: string };
+
+            const aud = parseInt(token.aud);
+            req.deleting = isNaN(aud) ? false : aud;
+        } catch (e) {
+            logger.warn(chalk`delete requested with invalid token: {yellow ${e}}`);
+        }
+    }
+
+    if (req.deleting === false) {
+        return void res.sendStatus(401);
+    }
+
+    next();
 }

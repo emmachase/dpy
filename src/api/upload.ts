@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { requireUploadToken } from "./auth";
+import { DeleteCheckRequest, generateDeleteToken, processDeleteToken, requireUploadToken } from "./auth";
 import { body } from "express-validator";
 import multer from "multer";
 import { getSiteConfig } from "../config";
 import { promisify } from "util";
-import { mkdir as mkdirNode, unlink } from "fs";
+import { mkdir as mkdirNode, unlink, rename } from "fs";
 import path from "path";
 import { randomString36 } from "../util/crypto";
 import { Upload } from "../db/entity/Upload";
@@ -118,7 +118,7 @@ UploadRouter.post("/upload",
                     path.extname(req.file.filename));
         } catch (e) {
             if (e === TOO_MANY_TRIES) {
-                unlink(req.file.path, () => { /* We don't care if this fails */ });
+                unlink(req.file.path, () => logger.warn(`Unable to unlink temporary upload at ${req.file.path}!`));
                 return res.status(500).send({ ok: false, err: e });
             } else {
                 throw e;
@@ -135,10 +135,34 @@ UploadRouter.post("/upload",
         await connection.manager.getRepository(Tag).delete({ upload });
 
         // Insert the new file
-        await connection.manager.save(upload);
-
+        const savedUpload = await connection.manager.save(upload);
+        const deletionToken = await generateDeleteToken(savedUpload.id.toString());
 
         res.status(200).send({
-            ok: true, url: `${req.protocol}://${req.hostname}/${upload.name}`
+            ok: true, url: `${req.protocol}://${req.hostname}/${upload.name}`,
+            del: `${req.protocol}://${req.hostname}/delete/${deletionToken}`
         });
+    });
+
+UploadRouter.post("/delete/:token",
+    processDeleteToken,
+    async (req: DeleteCheckRequest, res) => {
+        if (req.deleting === false) return;
+        const upload = await connection.manager.getRepository(Upload).findOne({ id: req.deleting });
+
+        if (!upload) {
+            return res.status(404).send({ ok: false, err: "Not Found" });
+        }
+
+        const destination = path.dirname(upload.filePath);
+        await mkdir(destination, { recursive: true });
+
+        rename(upload.filePath, destination + "/.deleted/" + path.basename(upload.filePath),
+            (e) => logger.warn(`Unable to move ${upload.filePath} to .deleted folder during deletion (${e}).`));
+
+        // Remove from the database
+        await connection.manager.getRepository(Tag).delete({ upload });
+        await connection.manager.getRepository(Upload).delete(upload);
+
+        res.status(200).send({ ok: true });
     });
