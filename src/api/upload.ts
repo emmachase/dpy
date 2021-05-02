@@ -88,7 +88,7 @@ async function generateName(template: string, ext: string) {
         name = await pickTemplateName(template) + ext;
     } while (await connection.manager.findOne(Upload, { name }));
 
-    nameRetryCounter.inc(tries);
+    nameRetryCounter.inc(tries - 1);
     return name;
 }
 
