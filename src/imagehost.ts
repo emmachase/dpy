@@ -96,11 +96,11 @@ ImageRouter.get("/:file", async (req, res, next) => {
 
                 data = await image.resize(sizer).toBuffer();
 
-                insertIntoCache(file.name, thumbSize, data, file.mime);
+                insertIntoCache(filename, thumbSize, data, file.mime);
             } else {
                 data = await image.toBuffer();
 
-                insertIntoCache(file.name, null, data, file.mime);
+                insertIntoCache(filename, null, data, file.mime);
             }
         } else {
             data = await readFile(file.filePath);
