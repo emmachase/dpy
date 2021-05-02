@@ -271,7 +271,6 @@ export async function checkAuthed(req: AuthCheckRequest, res: Response, next: Ne
     req.authed = false;
 
     if (!req.cookies) {
-        authFailCounter.inc({ scope: "page" });
         return next();
     }
 
