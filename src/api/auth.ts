@@ -8,6 +8,7 @@ import { MINUTES, timeFromNow, WEEKS } from "../util/time";
 import { NextFunction, Request, Response, Router } from "express";
 import { Logger } from "../logger";
 import chalk from "chalk";
+import { metrics } from "../service/metrics";
 
 const logger = new Logger("auth");
 
@@ -119,6 +120,12 @@ function sendTokens(res: Response, access: string, refresh: string) {
     });
 }
 
+const loginCounter = new metrics.Counter({
+    name: metrics.prefix + "logins",
+    help: "Number of logins by their success/failure status",
+    labelNames: ["result"]
+});
+
 /**
  * @api {post} /login Perform a password-based login
  * @apiName Login
@@ -155,12 +162,14 @@ AuthRouter.post("/login", async (req, res) => {
     const [passwordHash, passwordSalt] = (await getConfig()).admin.passwordHash;
     if (!(await verifyPassword(req.body.password, passwordHash, passwordSalt))) {
         logger.debug(chalk`Password {red failure} on /login`);
+        loginCounter.inc({ result: "failure" });
         return res.sendStatus(401);
     }
 
     logger.debug(chalk`Password {green success} on /login`);
     const accessToken = generateAccessToken();
     const refreshToken = await generateRefreshToken(tokenID);
+    loginCounter.inc({ result: "success" });
     return sendTokens(res, accessToken, refreshToken);
 });
 
@@ -247,6 +256,12 @@ export interface AuthCheckRequest extends Request {
     authed: boolean
 }
 
+const authFailCounter = new metrics.Counter({
+    name: metrics.prefix + "auth_failures",
+    help: "Number of authentication failures by scope type",
+    labelNames: ["scope"]
+});
+
 /**
  * Middleware for page authentication
  * **Not** to be used for API routes
@@ -256,6 +271,7 @@ export async function checkAuthed(req: AuthCheckRequest, res: Response, next: Ne
     req.authed = false;
 
     if (!req.cookies) {
+        authFailCounter.inc({ scope: "page" });
         return next();
     }
 
@@ -271,9 +287,11 @@ export async function checkAuthed(req: AuthCheckRequest, res: Response, next: Ne
             req.authed = true;
         } else {
             logger.debug(chalk`page auth check: {red bad token: ${JSON.stringify(token)}}`);
+            authFailCounter.inc({ scope: "page" });
         }
     } catch (e) {
         logger.debug(chalk`page auth check: {red invalid token: ${e}}`);
+        authFailCounter.inc({ scope: "page" });
     } finally {
         next();
     }
@@ -294,6 +312,7 @@ export function requireAccessToken(req: BearerRequest, res: Response, next: Next
             next();
         } catch (e) {
             logger.debug("bearer auth validation failure:", e);
+            authFailCounter.inc({ scope: "api" });
             return void res.sendStatus(401);
         }
     });
@@ -316,6 +335,7 @@ export function requireUploadToken(req: BearerRequest, res: Response, next: Next
 
                 next();
             } catch {
+                authFailCounter.inc({ scope: "upload" });
                 return void res.sendStatus(401);
             }
         }
@@ -344,6 +364,7 @@ export async function processDeleteToken(req: DeleteCheckRequest, res: Response,
     }
 
     if (req.deleting === false) {
+        authFailCounter.inc({ scope: "delete" });
         return void res.sendStatus(401);
     }
 

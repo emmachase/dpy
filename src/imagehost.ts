@@ -4,6 +4,7 @@ import { Upload } from "./db/entity/Upload";
 import { promisify } from "util";
 import { readFile as nativeReadFile } from "fs";
 import sharp from "sharp";
+import { metrics, metrics_prefix } from "./service/metrics";
 const readFile = promisify(nativeReadFile);
 
 export const ImageRouter = Router();
@@ -27,10 +28,39 @@ export function purgeCache(): void {
     rollingCache = [];
 }
 
+const imageRequestsMetric = new metrics.Counter({
+    name: metrics.prefix + "image_requests",
+    help: "Counter of image requests"
+});
+
+const imageCacheMetric = new metrics.Counter({
+    name: metrics.prefix + "image_cache",
+    help: "Counter of whether image requests are in cache",
+    labelNames: ["access"]
+});
+
+const requestDurationHistogram = new metrics.Histogram({
+    name: metrics.prefix + "http_request_duration_seconds",
+    help: "Duration of HTTP requests in seconds histogram",
+    buckets: [0.1, 5, 15, 50, 100, 500],
+    labelNames: ["method", "handler", "code"],
+});
+
 ImageRouter.get("/:file", async (req, res, next) => {
     const thumbSize = +req.query.size! || null;
     const filename = req.params.file ?? "<>";
 
+    let wasImage = false;
+    const end = requestDurationHistogram.startTimer();
+    res.on("finish", () =>
+        end({
+            method: req.method,
+            handler: wasImage ? "image" :
+                (res.statusCode === 404 ? "not_found" :
+                    new URL(req.url, `http://${req.hostname}`).pathname),
+            code: res.statusCode,
+        })
+    );
     // First check if it's in the cache
     const cachedFile = rollingCache.find(x =>
         x.name === filename &&
@@ -38,6 +68,10 @@ ImageRouter.get("/:file", async (req, res, next) => {
     );
 
     if (cachedFile) {
+        wasImage = true;
+        imageRequestsMetric.inc();
+        imageCacheMetric.inc({ access: "hit" });
+
         return res
             .contentType(cachedFile.mime)
             .send(cachedFile.file);
@@ -46,6 +80,10 @@ ImageRouter.get("/:file", async (req, res, next) => {
     const file = await connection.manager.findOne(Upload, { name: filename });
 
     if (file) {
+        wasImage = true;
+        imageRequestsMetric.inc();
+        imageCacheMetric.inc({ access: "miss" });
+
         // Result vars
         let data;
 

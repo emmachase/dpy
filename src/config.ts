@@ -10,6 +10,7 @@ let logger: Logger;
 
 export interface ServerSection {
     listen: number
+    metricsPort: number
     logLevel: LogLevel
 }
 
@@ -46,7 +47,8 @@ const defaultConfig = {
         namingTemplate: "{chars 4}"
     },
     server: {
-        listen: 5080
+        listen: 5080,
+        metricsPort: 5081
     }
 } as const;
 
@@ -184,7 +186,10 @@ async function promptServer(): Promise<ServerSection> {
         }
     ]);
 
-    return { ...svr, logLevel: defaultConfig.admin.logLevel };
+    return { ...svr,
+        logLevel: defaultConfig.admin.logLevel,
+        metricsPort: svr.listen + 1
+    };
 }
 
 /**

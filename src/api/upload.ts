@@ -14,11 +14,20 @@ import { connection } from "../db";
 import uniq from "lodash/uniq";
 import { Logger } from "../logger";
 import { purgeCache } from "../imagehost";
+import { metrics } from "../service/metrics";
 const mkdir = promisify(mkdirNode);
 
 const logger = new Logger("upload");
 
 export const UploadRouter = Router();
+
+new metrics.Gauge({
+    name: metrics.prefix + "uploads_total",
+    help: "Total number of uploads/files in the database",
+    async collect() {
+        this.set(await connection.manager.count(Upload));
+    }
+});
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function directoryDiscriminator(req: Express.Request, file: Express.Multer.File): string {
@@ -61,18 +70,25 @@ const fileUploader = multer({
     })
 });
 
+const nameRetryCounter = new metrics.Counter({
+    name: metrics.prefix + "name_retries",
+    help: "Number of times name generation failed, prompting a retry",
+});
+
 const RETRIES = 20, TOO_MANY_TRIES = "Couldn't generate file name, exceeded retry count";
 async function generateName(template: string, ext: string) {
     let name: string, tries = 0;
 
     do {
         if (tries++ >= RETRIES) {
+            nameRetryCounter.inc(RETRIES);
             throw TOO_MANY_TRIES;
         }
 
         name = await pickTemplateName(template) + ext;
     } while (await connection.manager.findOne(Upload, { name }));
 
+    nameRetryCounter.inc(tries);
     return name;
 }
 

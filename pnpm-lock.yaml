@@ -1,7 +1,6 @@
 dependencies:
   '@types/react-hamburger-menu': 0.0.3
   argon2: 0.27.0
-  body-parser: 1.19.0
   chalk: 4.1.0
   cookie-parser: 1.4.5
   express: 4.17.1
@@ -10,6 +9,7 @@ dependencies:
   jsonwebtoken: 8.5.1
   lodash: 4.17.20
   multer: 1.4.2
+  prom-client: 13.1.0
   react: 17.0.1
   react-dom: 17.0.1_react@17.0.1
   react-hamburger-menu: 1.2.1_react@17.0.1
@@ -761,6 +761,10 @@ packages:
       node: '>=8'
     resolution:
       integrity: sha512-1Yj8h9Q+QDF5FzhMs/c9+6UntbD5MkRfRwac8DoEm9ZfUBZ7tZ55YcGVAzEe4bXsdQHEk+s9S5wsOKVdZrw0tQ==
+  /bintrees/1.0.1:
+    dev: false
+    resolution:
+      integrity: sha1-DmVcm5wkNeqraL9AJyJtK1WjRSQ=
   /bl/4.0.3:
     dependencies:
       buffer: 5.7.1
@@ -3328,6 +3332,14 @@ packages:
       node: '>=0.4.0'
     resolution:
       integrity: sha512-7PiHtLll5LdnKIMw100I+8xJXR5gW2QwWYkT6iJva0bXitZKa/XMrSbdmg3r2Xnaidz9Qumd0VPaMrZlF9V9sA==
+  /prom-client/13.1.0:
+    dependencies:
+      tdigest: 0.1.1
+    dev: false
+    engines:
+      node: '>=10'
+    resolution:
+      integrity: sha512-jT9VccZCWrJWXdyEtQddCDszYsiuWj5T0ekrPszi/WEegj3IZy6Mm09iOOVM86A4IKMWq8hZkT2dD9MaSe+sng==
   /prop-types/15.7.2:
     dependencies:
       loose-envify: 1.4.0
@@ -3613,7 +3625,7 @@ packages:
       tough-cookie: 2.5.0
       tunnel-agent: 0.6.0
       uuid: 3.4.0
-    deprecated: 'request has been deprecated, see https://github.com/request/request/issues/3142'
+    deprecated: request has been deprecated, see https://github.com/request/request/issues/3142
     dev: false
     engines:
       node: '>= 6'
@@ -4192,6 +4204,12 @@ packages:
       node: '>=4.5'
     resolution:
       integrity: sha512-w2VwSrBoHa5BsSyH+KxEqeQBAllHhccyMFVHtGtdMpF4W7IRWfZjFiQceJPChOeTsSDVUpER2T8FA93pr0L+QA==
+  /tdigest/0.1.1:
+    dependencies:
+      bintrees: 1.0.1
+    dev: false
+    resolution:
+      integrity: sha1-Ljyyw56kSeVdHmzZEReszKRYgCE=
   /text-table/0.2.0:
     dev: true
     resolution:
@@ -4772,7 +4790,6 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^4.6.0
   '@typescript-eslint/parser': ^4.6.0
   argon2: ^0.27.0
-  body-parser: ^1.19.0
   chalk: ^4.1.0
   cookie-parser: ^1.4.5
   esbuild: ^0.7.21
@@ -4784,6 +4801,7 @@ specifiers:
   jsonwebtoken: ^8.5.1
   lodash: ^4.17.20
   multer: ^1.4.2
+  prom-client: ^13.1.0
   react: ^17.0.1
   react-dom: ^17.0.1
   react-hamburger-menu: ^1.2.1
