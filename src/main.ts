@@ -10,6 +10,7 @@ import WebRouter from "./web/router";
 import APIRouter from "./api";
 import { HOURS } from "./util/time";
 import { ImageRouter } from "./imagehost";
+import { initMetrics } from "./service/metrics";
 
 const logger = new Logger("main");
 
@@ -20,6 +21,8 @@ void getConfig().then(config =>
         await initSecrets();
         await clearOldTokens();
         setInterval(clearOldTokens, 6*HOURS);
+
+        await initMetrics();
 
         express.use(WebRouter);
         express.use("/api", APIRouter);
