@@ -4,7 +4,7 @@ import { Upload } from "./db/entity/Upload";
 import { promisify } from "util";
 import { readFile as nativeReadFile } from "fs";
 import sharp from "sharp";
-import { metrics, metrics_prefix } from "./service/metrics";
+import { metrics } from "./service/metrics";
 const readFile = promisify(nativeReadFile);
 
 export const ImageRouter = Router();
