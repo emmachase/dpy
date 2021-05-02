@@ -42,7 +42,7 @@ const imageCacheMetric = new metrics.Counter({
 const requestDurationHistogram = new metrics.Histogram({
     name: metrics.prefix + "http_request_duration_seconds",
     help: "Duration of HTTP requests in seconds histogram",
-    buckets: [0.1, 5, 15, 50, 100, 500],
+    buckets: [0.01, 0.1, 0.5, 1, 5, 10, 60],
     labelNames: ["method", "handler", "code"],
 });
 
