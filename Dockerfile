@@ -17,4 +17,4 @@ COPY --from=prod-deps /app/node_modules /app/node_modules
 COPY --from=build /app/build /app/build
 
 ENV NODE_ENV=production
-CMD [ "node", "/app/build/index.js" ]
+CMD [ "node", "/app/build/main.js" ]
