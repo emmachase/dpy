@@ -5,9 +5,16 @@ RUN corepack enable
 COPY . /app
 WORKDIR /app
 
+FROM base AS prod-deps
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+
 FROM base AS build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --no-frozen-lockfile
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run build
 
-FROM busybox:latest
-COPY --from=build /app/build /build
+FROM base
+COPY --from=prod-deps /app/node_modules /app/node_modules
+COPY --from=build /app/build /app/build
+
+ENV NODE_ENV=production
+CMD [ "node", "/app/build/index.js" ]
