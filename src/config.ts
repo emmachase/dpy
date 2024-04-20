@@ -221,9 +221,11 @@ function validateConfig(config: DumpyConfig) {
 async function fetchConfig(): Promise<DumpyConfig> {
     logger = new Logger("config"); // We have to do this here for module resolution to work
 
+    const configPath = process.env.DPY_CONFIG || "./config.toml";
+
     let config;
     try {
-        config = readFileSync("config.toml");
+        config = readFileSync(configPath);
         config = config.toString("ascii");
         try {
             config = toml.parse(config);
@@ -241,7 +243,7 @@ async function fetchConfig(): Promise<DumpyConfig> {
             process.exit(1);
         }
     } catch {
-        console.log(chalk.red(chalk.bold("ERROR:"), chalk.reset("config.toml"), chalk.red("is missing!")));
+        console.log(chalk.red(chalk.bold("ERROR:"), chalk.reset(configPath), chalk.red("is missing!")));
         if (!process.stdin.isTTY) {
             console.log(chalk.red(chalk.bold("ERROR:"), "Aborting due to unrecoverable error..."));
             process.exit(1);
@@ -274,7 +276,7 @@ async function fetchConfig(): Promise<DumpyConfig> {
             } while (!confirm);
 
             console.log(chalk.cyan.bold("INFO:"), "Saving generated config...");
-            writeFileSync("./config.toml", TOML_HEADER + configToml);
+            writeFileSync(configPath, TOML_HEADER + configToml);
         } else {
             console.log(chalk.cyan.bold("INFO:"), "Aborting due to missing config...");
             process.exit(1);

@@ -1,7 +1,7 @@
 [{
     "name": "development",
     "type": "sqlite",
-    "database": "dev-database.sqlite",
+    "database": "data/dev-database.sqlite",
     "synchronize": true,
     "logging": "all",
     "entities": [
@@ -22,7 +22,7 @@
 {
     "name": "production",
     "type": "sqlite",
-    "database": "database.sqlite",
+    "database": "data/database.sqlite",
     "synchronize": true,
     "entities": [
         "build/db/entity/**/*.js"

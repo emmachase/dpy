@@ -43,5 +43,6 @@ for (const route in routing) {
 }
 
 router.use(express.static("public"));
+router.use(express.static("static"));
 
 export default router;

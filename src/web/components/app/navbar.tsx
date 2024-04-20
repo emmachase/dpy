@@ -44,12 +44,14 @@ export const NavBar: FC<{
             )}</nav>
             <div className="nav-right">
                 <a href="#" onClick={handleLogout}>Logout</a>
-                <HamburgerMenu className="hamburger"
-                    isOpen={menuOpen}
-                    menuClicked={() => setMenuOpen(!menuOpen)}
-                    color="#000"
-                    width={24} height={20}
-                />
+                <div className="hamburger">
+                    <HamburgerMenu
+                        isOpen={menuOpen}
+                        menuClicked={() => setMenuOpen(!menuOpen)}
+                        color="#000"
+                        width={24} height={20}
+                    />
+                </div>
             </div>
         </header>
     );

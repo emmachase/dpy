@@ -1,0 +1,15 @@
+# Docker-related #
+##################
+Dockerfile
+.dockerignore
+
+# VCS folders #
+###############
+.git
+.svn
+.hg
+.github
+
+# Node.js related #
+###################
+node_modules

@@ -190,7 +190,7 @@ AuthRouter.post("/refresh", async (req, res) => {
             audience: JWT_AUD.REFRESH
         });
 
-        if (validateTokenShape(token) && verifyRefreshToken(token.jti)) {
+        if (validateTokenShape(token) && await verifyRefreshToken(token.jti)) {
             const accessToken = generateAccessToken();
             const refreshToken = await generateRefreshToken(token.jti);
             return sendTokens(res, accessToken, refreshToken);
