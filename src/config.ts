@@ -15,7 +15,7 @@ export interface ServerSection {
 }
 
 export interface AdminSection {
-    passwordHash: [string, string]
+    passwordHash: string
     deleteTimeout: number
 }
 
@@ -156,8 +156,7 @@ async function promptAdmin(): Promise<AdminSection> {
             name: "passwordHash",
             message: "Set a Password:",
             filter: async password => {
-                const salt = await randomByteString(32);
-                return password.length && [await hashPassword(password, salt), salt];
+                return password.length && await hashPassword(password);
             },
             validate: inp => !!inp || "Password is required!"
         },

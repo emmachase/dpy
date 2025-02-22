@@ -7,9 +7,9 @@ import { Logger } from "../logger";
 const logger = new Logger("metrics");
 
 const metrics_prefix = "dpy_";
-client.collectDefaultMetrics({
-    prefix: metrics_prefix
-});
+// client.collectDefaultMetrics({
+//     prefix: metrics_prefix
+// });
 
 export async function initMetrics(): Promise<void> {
     const app = express();

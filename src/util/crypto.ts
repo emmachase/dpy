@@ -53,11 +53,9 @@ export async function randomString36(length = 32): Promise<string> {
 /**
  * Returns the application hash of a password+salt combo.
  * @param password The user supplied password
- * @param salt A generated salt, should have been constructed by {@link randomByteString}
  */
-export async function hashPassword(password: string, salt: string): Promise<string> {
+export async function hashPassword(password: string): Promise<string> {
     return await argon.hash(password, {
-        salt: Buffer.from(salt, "base64"),
         type: argon.argon2id
     });
 }
@@ -66,11 +64,7 @@ export async function hashPassword(password: string, salt: string): Promise<stri
  * Verifies an application generated password hash
  * @param password The user supplied password
  * @param hash The stored password hash
- * @param salt The stored password salt
  */
-export async function verifyPassword(password: string, hash: string, salt: string): Promise<boolean> {
-    return await argon.verify(hash, password, {
-        salt: Buffer.from(salt, "base64"),
-        type: argon.argon2id
-    });
+export async function verifyPassword(password: string, hash: string): Promise<boolean> {
+    return await argon.verify(hash, password);
 }

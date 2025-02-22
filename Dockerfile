@@ -1,16 +1,13 @@
-FROM node:20-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
-COPY . /app
+FROM oven/bun:1 AS base
 WORKDIR /app
+COPY . .
 
 FROM base AS prod-deps
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --prod --frozen-lockfile
+RUN bun install --production --frozen-lockfile
 
 FROM base AS build
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
-RUN pnpm run build
+RUN bun install --frozen-lockfile
+RUN bun run build
 
 FROM base
 COPY --from=prod-deps /app/node_modules /app/node_modules
@@ -18,4 +15,4 @@ COPY --from=build /app/build /app/build
 COPY --from=build /app/public /app/public
 
 ENV NODE_ENV=production
-CMD [ "node", "/app/build/main.js" ]
+CMD [ "bun", "/app/build/main.js" ]

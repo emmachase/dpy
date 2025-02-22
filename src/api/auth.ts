@@ -159,8 +159,8 @@ AuthRouter.post("/login", async (req, res) => {
         // New session
     }
 
-    const [passwordHash, passwordSalt] = (await getConfig()).admin.passwordHash;
-    if (!(await verifyPassword(req.body.password, passwordHash, passwordSalt))) {
+    const passwordHash = (await getConfig()).admin.passwordHash;
+    if (!(await verifyPassword(req.body.password, passwordHash))) {
         logger.debug(chalk`Password {red failure} on /login`);
         loginCounter.inc({ result: "failure" });
         return res.sendStatus(401);

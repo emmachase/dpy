@@ -139,7 +139,7 @@ UploadRouter.post("/upload",
                     path.extname(req.file.filename));
         } catch (e) {
             if (e === TOO_MANY_TRIES) {
-                unlink(req.file.path, () => logger.warn(`Unable to unlink temporary upload at ${req.file.path}!`));
+                unlink(req.file.path, () => logger.warn(`Unable to unlink temporary upload at ${req.file?.path}!`));
                 return res.status(500).send({ ok: false, err: e });
             } else {
                 throw e;
