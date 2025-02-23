@@ -3,5 +3,6 @@ node_modules
 config.toml
 database.sqlite
 dev-database.sqlite
+*.sqlite.bak
 images/
 public/

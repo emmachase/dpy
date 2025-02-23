@@ -26,16 +26,16 @@ export const Card: FC<{
     hide?: boolean
 }> = React.memo((props) => {
     const [imLoaded, setLoaded] = useState(false);
-    const [expandedImLoaded, setExpandedImLoaded] = useState(false);
+    const [fullImageLoaded, setFullImageLoaded] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
-    const fullImageRef = useRef<HTMLImageElement & HTMLVideoElement>(null);
+    const thumbImageRef = useRef<HTMLImageElement & HTMLVideoElement>(null);
     const portalRoot = typeof document !== 'undefined' ? document.getElementById('portal-root') : null;
 
     // Calculate the position and size for the expanded animation
     const getExpandedStyle = () => {
-        if (!fullImageRef.current) return {
+        if (!thumbImageRef.current) return {
             top: 0,
             left: 0,
             width: 0,
@@ -43,7 +43,7 @@ export const Card: FC<{
             zIndex: 1000
         };
         
-        const img = fullImageRef.current;
+        const img = thumbImageRef.current;
         const windowWidth = window.innerWidth;
         const windowHeight = window.innerHeight;
         
@@ -97,11 +97,8 @@ export const Card: FC<{
         setLoaded(true);
     };
 
-    const onExpandedImageLoad = (e: React.SyntheticEvent) => {
-        setTimeout(() => {
-            setExpandedImLoaded(true);
-            setExpandedStyle(getExpandedStyle());
-        }, 10);
+    const onFullImageLoad = (e: React.SyntheticEvent) => {
+        setFullImageLoaded(true);
     };
 
     const contentProps = {
@@ -113,18 +110,18 @@ export const Card: FC<{
     };
 
     const expandedContentProps = {
-        ...contentProps,
+        draggable: false,
         src: props.url || "",
         hidden: false,
-        onLoad: onExpandedImageLoad,
-        onCanPlay: onExpandedImageLoad,
+        onLoad: onFullImageLoad,
+        onCanPlay: onFullImageLoad,
     };
 
     const handleClick = () => {
         if (!imLoaded || !props.url) return;
         if (!isExpanded) {
             setIsExpanded(true);
-            setExpandedImLoaded(false);
+            setFullImageLoaded(false);
 
             setExpandedStyle({
                 immediate: true,
@@ -132,9 +129,10 @@ export const Card: FC<{
                 left: cardRef.current?.getBoundingClientRect().left,
                 width: cardRef.current?.getBoundingClientRect().width,
                 height: cardRef.current?.getBoundingClientRect().height,
-
                 config: { tension: 600, friction: 40, clamp: false },
-                onRest: () => {}
+                onRest: () => {
+                    setExpandedStyle(getExpandedStyle());
+                }
             });
         }
     };
@@ -160,13 +158,27 @@ export const Card: FC<{
 
     const renderContent = (isExpanded = false) => (
         <div className="main-content">
-            {props.type === CardContentType.VIDEO
-                ? <video 
+            {props.type === CardContentType.VIDEO ? (
+                <video 
                     {...(isExpanded ? expandedContentProps : contentProps)} 
-                    ref={isExpanded ? fullImageRef : null}
+                    ref={isExpanded ? thumbImageRef : null}
                     controls={isExpanded}
                 />
-                : <img {...(isExpanded ? expandedContentProps : contentProps)} ref={isExpanded ? fullImageRef : null}/>}
+            ) : (
+                <>
+                    <img {...contentProps} 
+                        // style={{ display: isExpanded && fullImageLoaded ? 'none' : 'block' }} 
+                        ref={!isExpanded ? thumbImageRef : null}
+                    />
+                    {isExpanded && (
+                        <img 
+                            {...expandedContentProps} 
+                            
+                            style={{ display: fullImageLoaded ? 'block' : 'none' }}
+                        />
+                    )}
+                </>
+            )}
         </div>
     );
 
@@ -179,20 +191,20 @@ export const Card: FC<{
                 style={{
                     position: "relative",
                     visibility: props.hide ? "hidden" : "visible",
-                    opacity: (isExpanded && expandedImLoaded) ? 0 : 1
+                    opacity: (isExpanded || isClosing) ? 0 : 1
                 }}>
                 {renderContent()}
                 {<Skeleton fading={imLoaded}/>}
             </div>
             {(isExpanded || isClosing) && portalRoot && createPortal(
                 <>
-                    <Backdrop in={expandedImLoaded && !isClosing} onClick={handleClose} />
+                    <Backdrop in={!isClosing} onClick={handleClose} />
                     <animated.div 
                         className={clazz("im-card expanded", isClosing && "no-shadow")}
                         style={{
                             ...expandedStyle, 
                             position: 'fixed',
-                            opacity: expandedImLoaded ? 1 : 0.0001
+                            opacity: 1
                         }}
                         onClick={handleClose}
                     >
