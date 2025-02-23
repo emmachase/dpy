@@ -87,6 +87,14 @@ export const Card: FC<{
     useEffect(() => {
         if (isExpanded) {
             disableScroll();
+            const handleResize = () => {
+                setExpandedStyle(getExpandedStyle());
+            };
+            window.addEventListener('resize', handleResize);
+            return () => {
+                window.removeEventListener('resize', handleResize);
+                enableScroll();
+            };
         } else {
             enableScroll();
         }
