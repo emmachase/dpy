@@ -161,7 +161,7 @@ export const Card: FC<{
             {props.type === CardContentType.VIDEO ? (
                 <video 
                     {...(isExpanded ? expandedContentProps : contentProps)} 
-                    ref={isExpanded ? thumbImageRef : null}
+                    ref={!isExpanded ? thumbImageRef : null}
                     controls={isExpanded}
                 />
             ) : (
