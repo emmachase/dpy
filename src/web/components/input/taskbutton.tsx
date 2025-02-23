@@ -10,6 +10,8 @@ export const TaskButton: FC<{
     const [hideLoading, setHideLoading] = useState(true);
 
     const handleClick = async () => {
+        if (props.disabled || loading) return;
+        
         const longTimer = setTimeout(() => setHideLoading(false), 300);
 
         setLoading(true);

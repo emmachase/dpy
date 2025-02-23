@@ -153,7 +153,7 @@ UploadRouter.post("/upload",
         upload.mime = req.file.mimetype;
 
         // Delete any pre-existing data
-        await connection.manager.getRepository(Tag).delete({ upload });
+        // await connection.manager.getRepository(Tag).delete({ upload });
 
         // Insert the new file
         const savedUpload = await connection.manager.save(upload);

@@ -13,9 +13,13 @@ export async function callAPI(opts: {endpoint: string, queries?: Record<string, 
 
     const access = await fetch(path + queryString, {
         method: opts.method || "POST",
-        body: opts.body ? JSON.stringify(opts.body) : undefined,
+        body: opts.body 
+            ? opts.body instanceof FormData 
+                ? opts.body 
+                : JSON.stringify(opts.body) 
+            : undefined,
         headers: {
-            "Content-Type": "application/json",
+            ...(opts.body instanceof FormData ? {} : {"Content-Type": "application/json"}),
             "Authorization": "Bearer " + localStorage.getItem("accessToken")
         }
     });

@@ -23,7 +23,7 @@ export const Card: FC<{
     url?: string
     type?: CardContentType
     hide?: boolean
-}> = (props) => {
+}> = React.memo((props) => {
     const [bigView, setBigView] = useState(false);
     const [imLoaded, setLoaded] = useState(false);
 
@@ -224,4 +224,4 @@ export const Card: FC<{
             </div> /* placeholder */
             : regularView
     );
-};
+});

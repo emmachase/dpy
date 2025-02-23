@@ -12,7 +12,7 @@ export const ListRouter = Router();
 const DEFAULT_LIMIT = 30;
 
 ListRouter.get("/list", requireAccessToken, async (req, res) => {
-    const before = implies(req.query.before, parseInt);
+    const before = undefined; // TODO: testing implies(req.query.before, parseInt);
     const limit = +(req.query.limit ?? DEFAULT_LIMIT);
     const mime_filter = req.query.mfilter;
 
@@ -32,7 +32,11 @@ ListRouter.get("/list", requireAccessToken, async (req, res) => {
                 })
         });
 
-    res.send(results
-        .map(r => assign(r, { tags: r.tags.map(t => t.value) }))
-        .map(r => pick(r, "id", "name", "created", "mime", "description", "tags")));
+    console.log(results.concat(results, results, results, results, results, results, results, results, results, results));
+
+    const tagged = results.map(r => assign(r, { tags: r.tags.map(t => t.value) }));
+
+    res.send(
+        tagged.concat(tagged, tagged, tagged, tagged, tagged, tagged, tagged, tagged, tagged, tagged)
+            .map(r => pick(r, "id", "name", "created", "mime", "description", "tags")));
 });

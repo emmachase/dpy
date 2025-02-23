@@ -10,7 +10,7 @@ enum DisplayType {
 const loadingImage = "data:image/svg+xml,%3Csvg width='140' height='20' viewBox='0 0 140 20' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='10' cy='10' r='10' fill='white'/%3E%3Ccircle cx='50' cy='10' r='10' fill='white'/%3E%3Ccircle cx='130' cy='10' r='10' fill='white'/%3E%3Ccircle cx='90' cy='10' r='10' fill='white'/%3E%3C/svg%3E%0A";
 
 export const UploadBox: FC<{
-
+    onFileSelected?: (file: File | null) => void;
 }> = (props) => {
     const dragCounter = useRef(0), dragTarget = useRef<SVGSVGElement>(null);
     const [fileState, setFileState] = useState(DisplayType.WAITING);
@@ -22,9 +22,11 @@ export const UploadBox: FC<{
         if (file) {
             setFileState(file.type.startsWith("image") ? DisplayType.IMAGE : DisplayType.FILE);
             setFile(file);
+            props.onFileSelected?.(file);
         } else {
             setFileState(DisplayType.WAITING);
             setFile(null);
+            props.onFileSelected?.(null);
         }
     };
 
