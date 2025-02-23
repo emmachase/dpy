@@ -1,4 +1,5 @@
 import React, { FC, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { CSSTransition } from "react-transition-group";
 import { Skeleton } from "./skeleton";
 import { useSpring, animated } from "react-spring";
@@ -24,204 +25,176 @@ export const Card: FC<{
     type?: CardContentType
     hide?: boolean
 }> = React.memo((props) => {
-    const [bigView, setBigView] = useState(false);
     const [imLoaded, setLoaded] = useState(false);
+    const [expandedImLoaded, setExpandedImLoaded] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
+    const cardRef = useRef<HTMLDivElement>(null);
+    const fullImageRef = useRef<HTMLImageElement & HTMLVideoElement>(null);
+    const portalRoot = typeof document !== 'undefined' ? document.getElementById('portal-root') : null;
 
-    const calc = (t: HTMLDivElement, x: number, y: number, h: boolean) => {
-        const r = t.getBoundingClientRect();
-
-        return [
-            -(y - (r.y + r.height / 2)) / (h ? 8 : 15),
-            (x - (r.x + r.width / 2)) / (h ? 8 : 15),
-            h ? 1.08 : 1.1
-        ];
-    };
-    const trans = ([x, y, s]: number[]) => `perspective(600px) rotateX(${x}deg) rotateY(${y}deg) scale(${s})`;
-
-    const [anim, set] = useSpring(() => ({ xys: [0, 0, 1], config: {mass: 1, tension: 300, friction: 25} }));
-
-    const updateAnim = ({ clientX: x, clientY: y, target: t, buttons }: React.MouseEvent) => {
-        if (bigView) {
-            set({ xys: [0, 0, 1] });
-        } else {
-            set({ xys: calc(t as HTMLDivElement, x, y, buttons > 0) });
+    // Calculate the position and size for the expanded animation
+    const getExpandedStyle = () => {
+        if (!fullImageRef.current) return {
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0,
+            zIndex: 1000
+        };
+        
+        const img = fullImageRef.current;
+        const windowWidth = window.innerWidth;
+        const windowHeight = window.innerHeight;
+        
+        // Calculate dimensions that maintain aspect ratio and fill most of the screen
+        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        const maxWidth = windowWidth * 0.9;
+        const maxHeight = windowHeight * 0.9;
+        let targetWidth = maxWidth;
+        let targetHeight = maxWidth / aspectRatio;
+        
+        if (targetHeight > maxHeight) {
+            targetHeight = maxHeight;
+            targetWidth = maxHeight * aspectRatio;
         }
+        
+        return {
+            top: (windowHeight - targetHeight) / 2,
+            left: (windowWidth - targetWidth) / 2,
+            width: targetWidth,
+            height: targetHeight,
+            zIndex: 1000,
+            immediate: false,
+
+            config: { tension: 600, friction: 40, clamp: false },
+            onRest: () => {}
+        };
     };
 
-    const [pos, setPos] = useSpring(() => ({ wh: [160, 160], xy: [-1, -1], config: {mass: 1, tension: 600, friction: 50}}));
+    const [expandedStyle, setExpandedStyle] = useSpring(() => ({
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0,
+        zIndex: 1000,
+        config: { tension: 600, friction: 40 },
+    }));
 
-    const dims = useRef({w:0, h:0});
-
-    const recalcBig = () => {
-        const idim = dims.current;
-        const validView = [window.innerWidth - 80, window.innerHeight - 80 - 260];
-        const sfW = Math.min(Math.max(1, 160 / idim.w), validView[0] / idim.w);
-        const sfH = Math.min(Math.max(1, 160 / idim.w), validView[1] / idim.h);
-
-        let finalW, finalH;
-        if (idim.h*sfW <= validView[1]) {
-            // We can scale by height safely
-            finalW = idim.w*sfW;
-            finalH = idim.h*sfW;
+    useEffect(() => {
+        console.log("isExpanded", isExpanded);
+        if (isExpanded) {
+            disableScroll();
         } else {
-            // Or by width safely
-            finalW = idim.w*sfH;
-            finalH = idim.h*sfH;
+            enableScroll();
         }
-
-        setPos({
-            xy: [
-                (window.innerWidth - finalW)/2,
-                (window.innerHeight - finalH - 260)/2,
-            ],
-            wh: [finalW, finalH],
-            immediate: false
-        });
-
-        // setPos({
-        //     wh: [rect.width, rect.height]
-        // });
-    };
-
-    const [isThumb, setThumb] = useState(true);
-    const loadBackBounce = useRef<number | NodeJS.Timeout>();
-    const trueBackPosition = useRef([0, 0]);
-    const [isReturning, setReturning] = useState(false);
+        return () => enableScroll();
+    }, [isExpanded]);
 
     const onImageLoad = (e: React.SyntheticEvent) => {
-        clearTimeout(loadBackBounce.current as number);
-        const img = (e.target as HTMLImageElement | HTMLVideoElement);
-
-        if (img instanceof HTMLImageElement) {
-            dims.current.w = img.naturalWidth;
-            dims.current.h = img.naturalHeight;
-        } else {
-            dims.current.w = img.videoWidth;
-            dims.current.h = img.videoHeight;
-
-            if (bigView) return;
-        }
-
-        if (dims.current.w !== 0 && !isThumb) {
-            // Big load
-
-            // TODO: This is an issue caused by the element being recreated
-            // as "big" and position: fixed which alters the position unnecessarily;
-            // there should be a better way to fix this, but the element seems to be
-            // limited in terms of state at this point in the computation.
-            if (img.className === "big") return;
-            // const rect = img.parentElement!.getBoundingClientRect();
-            // const trueLeft = (rect.left + rect.width/2) - 160/2;
-            // const trueTop = (rect.top + rect.height/2) - 160/2;
-            const {x: trueLeft, y: trueTop} = computePlainPosition(img.parentElement!);
-            trueBackPosition.current = [trueLeft, trueTop - window.scrollY, window.scrollY];
-
-            set({ xys: [0, 0, 1] });
-            setPos({
-                xy: trueBackPosition.current.slice(0, 2),
-                immediate: true
-            });
-
-            recalcBig();
-            setBigView(true);
-        }
-
         setLoaded(true);
     };
 
-    const expandContent = () => {
-        if (isThumb) {
-            disableScroll();
-
-            setThumb(false);
-            loadBackBounce.current = setTimeout(() => setLoaded(false), 1000);
-        }
+    const onExpandedImageLoad = (e: React.SyntheticEvent) => {
+        setTimeout(() => {
+            setExpandedImLoaded(true);
+            setExpandedStyle(getExpandedStyle());
+        }, 10);
     };
 
     const contentProps = {
-        className: clazz(bigView && "big"),
-        src: props.url ? props.url + (isThumb ? "?size=200" : "") : "",
-        draggable: false, hidden: !imLoaded,
-        onClick: expandContent,
+        src: props.url ? props.url + "?size=200" : "",
+        draggable: false, 
+        hidden: !imLoaded,
         onLoad: onImageLoad,
         onCanPlay: onImageLoad,
-        controls: bigView
     };
 
-    const regularView = <animated.div
-        className={clazz("im-card", (bigView && !isReturning) && "big")}
-        style={{
-            position: bigView ? "fixed" : "relative",
-            visibility: props.hide ? "hidden" : "visible",
-            // props.hide ? {visibility: "hidden"} : {},
-            transform: imLoaded ?
-                anim.xys.interpolate(((...args: number[]) => trans(args)) as any): "",
-            cursor: (imLoaded && !bigView) ? "pointer" : "default",
-            zIndex: bigView ? 100: "initial",
-            left:   bigView ? pos.xy.interpolate(((x: number           ) => x) as any) : "",
-            top:    bigView ? pos.xy.interpolate(((_: number, y: number) => y) as any) : "",
-            width:  bigView ? pos.wh.interpolate(((w: number           ) => w) as any) : "",
-            height: bigView ? pos.wh.interpolate(((_: number, h: number) => h) as any) : "",
-        }}
+    const expandedContentProps = {
+        ...contentProps,
+        src: props.url || "",
+        hidden: false,
+        onLoad: onExpandedImageLoad,
+        onCanPlay: onExpandedImageLoad,
+    };
 
-        onMouseMove={updateAnim}
-        onMouseDown={updateAnim}
-        onMouseUp={updateAnim}
-        onMouseLeave={() => set({ xys: [0, 0, 1] })}>
+    const handleClick = () => {
+        if (!imLoaded || !props.url) return;
+        if (!isExpanded) {
+            setIsExpanded(true);
+            setExpandedImLoaded(false);
 
-        <div className="main-content">
-            {props.type === CardContentType.VIDEO
-                ? <video {...contentProps}/>
-                : <img {...contentProps}/>}
-        </div>
-        {<Skeleton fading={imLoaded}/>}
-    </animated.div>;
+            setExpandedStyle({
+                immediate: true,
+                top: cardRef.current?.getBoundingClientRect().top,
+                left: cardRef.current?.getBoundingClientRect().left,
+                width: cardRef.current?.getBoundingClientRect().width,
+                height: cardRef.current?.getBoundingClientRect().height,
 
-    const retargetReturn = () => {
-        if (window.scrollY !== trueBackPosition.current[2]) {
-            const pageTop = trueBackPosition.current[1] + trueBackPosition.current[2];
-            trueBackPosition.current[1] = pageTop - window.scrollY;
-            trueBackPosition.current[2] = window.scrollY;
+                config: { tension: 600, friction: 40, clamp: false },
+                onRest: () => {}
+            });
         }
+    };
 
-        setPos({
-            xy: trueBackPosition.current.slice(0, 2),
-            wh: [160, 160]
+    const handleClose = () => {
+        if (!cardRef.current) return;
+        setIsClosing(true);
+        const rect = cardRef.current.getBoundingClientRect();
+        setExpandedStyle({
+            immediate: false,
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            height: rect.height,
+
+            config: { tension: 600, friction: 40, clamp: true },
+            onRest: () => {
+                setIsExpanded(false);
+                setIsClosing(false);
+            }
         });
     };
 
-    // Compensate for scroll during animation
-    useEffect(() => {
-        const unreg = () => window.removeEventListener("scroll", retargetReturn);
-
-        if (isReturning) {
-            window.addEventListener("scroll", retargetReturn);
-        } else {
-            unreg();
-        }
-
-        return unreg;
-    }, [isReturning]);
+    const renderContent = (isExpanded = false) => (
+        <div className="main-content">
+            {props.type === CardContentType.VIDEO
+                ? <video {...(isExpanded ? expandedContentProps : contentProps)} ref={isExpanded ? fullImageRef : null}/>
+                : <img {...(isExpanded ? expandedContentProps : contentProps)} ref={isExpanded ? fullImageRef : null}/>}
+        </div>
+    );
 
     return (
-        bigView
-            ? <div className="im-card" style={{visibility: "hidden"}}>
-                <Backdrop in={!isReturning} onClick={() => {
-                    if (isReturning) return;
-
-                    retargetReturn();
-
-                    setReturning(true);
-                    setTimeout(() => {
-                        setBigView(false);
-                        setReturning(false);
-                        setThumb(true);
-
-                        enableScroll();
-                    }, 350);
-                }}/>
-                {regularView}
-            </div> /* placeholder */
-            : regularView
+        <>
+            <div 
+                ref={cardRef}
+                className={clazz("im-card", imLoaded && props.url && "clickable")}
+                onClick={handleClick}
+                style={{
+                    position: "relative",
+                    visibility: props.hide ? "hidden" : "visible",
+                    opacity: (isExpanded && expandedImLoaded) ? 0 : 1
+                }}>
+                {renderContent()}
+                {<Skeleton fading={imLoaded}/>}
+            </div>
+            {(isExpanded || isClosing) && portalRoot && createPortal(
+                <>
+                    <Backdrop in={expandedImLoaded && !isClosing} onClick={handleClose} />
+                    <animated.div 
+                        className={clazz("im-card expanded", isClosing && "no-shadow")}
+                        style={{
+                            ...expandedStyle, 
+                            position: 'fixed',
+                            opacity: expandedImLoaded ? 1 : 0.0001
+                        }}
+                        onClick={handleClose}
+                    >
+                        {renderContent(true)}
+                    </animated.div>
+                </>,
+                portalRoot
+            )}
+        </>
     );
 });

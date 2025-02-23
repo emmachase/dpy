@@ -82,62 +82,47 @@ aside {
     &.infinite-scroll-component {
         overflow: visible !important;
     }
+}
 
-    .im-card {
+.im-card {
+    position: relative;
+    width: 160px;
+    height: 160px;
+
+    transition: box-shadow 0.25s;
+    box-shadow: 0 5px 20px -2px rgba(0, 0, 0, 0.2);
+    &:hover {
+        box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.3);
+    }
+
+    &.no-shadow {
+        box-shadow: none;
+    }
+
+    border-radius: 10px;
+    overflow: hidden;
+
+    .react-loading-skeleton {
+        pointer-events: none;
+        position: absolute;
+        height: 100%;
+        left: 0;
+        top: 0;
+    }
+
+    .main-content {
         position: relative;
-        height: 160px;
-
-        transition: box-shadow 0.25s;
-        box-shadow: 0 5px 20px -2px rgba(0, 0, 0, 0.2);
-        &:hover {
-            box-shadow: 0 10px 30px -4px rgba(0, 0, 0, 0.3);
-        }
-
-        &.big {
-            box-shadow: 0 25px 40px -10px rgba(0, 0, 0, 0.6);
-        }
-
-        border-radius: 10px;
+        width: 100%;
+        height: 100%;
+        border-radius: 4px;
         overflow: hidden;
+    }
 
-
-        .react-loading-skeleton {
-            pointer-events: none;
-            position: absolute;
-            height: 100%;
-            left: 0;
-            top: 0;
-        }
-
-        .main-content {
-            position: relative;
-            width: 100%;
-            height: 100%;
-
-            // &::after {
-            //     content: '';
-            //     display: block;
-            //     width: 100%;
-            //     height: 100%;
-            //     box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.2);
-            //     position: absolute;
-            //     top: 0;
-            // }
-
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        img, video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            user-select: none;
-
-            &.big {
-                backdrop-filter: blur(15px);
-            }
-        }
+    img, video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
     }
 }
 
@@ -163,8 +148,9 @@ aside {
     }
 
     &:not(.in) {
-        animation: fadeOut 0.25s;
+        // animation: fadeOut 0.25s;
         opacity: 0;
+        pointer-events: none;
     }
 }
 

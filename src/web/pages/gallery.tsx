@@ -10,11 +10,15 @@ import { AutoSizer, Grid, InfiniteLoader, Size } from 'react-virtualized';
 const CARD_WIDTH = 200;
 const CARD_HEIGHT = 200;
 const LOAD_BATCH_SIZE = 50;
+// Very large number to simulate infinite scrolling
+const VIRTUAL_LIST_SIZE = 1000000;
 
 const pageRoot: PageRootComponent = ({appParams}) => {
     const [done, setDone] = useState(false);
     const [loading, setLoading] = useState(false);
     const [images, setImages] = useState<ImageModel[]>([]);
+
+    const [maxIndex, setMaxIndex] = useState(0);
 
     // Add initial data loading
     useEffect(() => {
@@ -26,6 +30,10 @@ const pageRoot: PageRootComponent = ({appParams}) => {
     const fetchData = async (startIndex: number, stopIndex: number) => {
         console.log("fetchData", startIndex, stopIndex);
 
+        if (stopIndex > maxIndex) {
+            setMaxIndex(stopIndex);
+        }
+
         if (loading || done) return;
         setLoading(true);
         const lastId = startIndex > 0 ? +images[startIndex - 1]?.id : 0;
@@ -33,7 +41,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
         if (newImages.length === 0) setDone(true);
 
         while (stopIndex - startIndex > newImages.length) {
-            // Fkae for now, just duplicate until we have enough
+            // Fake for now, just duplicate until we have enough
             newImages.push(...newImages);
         }
         console.log("newImages", newImages.length);
@@ -50,21 +58,28 @@ const pageRoot: PageRootComponent = ({appParams}) => {
         const numColumns = getNumColumns(style.width);
         const idx = rowIndex * numColumns + columnIndex;
         
+        // Show skeleton card if we're beyond loaded images
         if (idx >= images.length) {
-            return null;
-        }
-
-        const image = images[idx];
-        if (!image) {
             return (
-                <div key={key} style={style}>
+                <div key={key} style={{
+                    ...style,
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
                     <Card />
                 </div>
             );
         }
 
+        const image = images[idx];
         return (
-            <div key={key} style={style}>
+            <div key={key} style={{
+                ...style,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
                 <Card
                     key={image.name ?? idx}
                     url={image.name}
@@ -78,24 +93,30 @@ const pageRoot: PageRootComponent = ({appParams}) => {
 
     const getNumColumns = (width: number) => Math.max(1, Math.floor(width / CARD_WIDTH));
 
-    const getNumRows = (width: number) => {
-        const numColumns = getNumColumns(width);
-        return Math.ceil(images.length / numColumns);
+    const getColumnWidth = (width: number, numColumns: number) => {
+        return width / numColumns;
     };
 
-    return (<>
+    const getNumRows = (width: number) => {
+        const numColumns = getNumColumns(width);
+        // Calculate actual rows needed for current data plus one batch
+        return Math.ceil((maxIndex + LOAD_BATCH_SIZE) / numColumns);
+    };
+
+    return (<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <NavBar activePage="GALLERY"/>
-        <div className="content-wrapper" style={{ height: 'calc(100vh - 86px)', width: '100%' }}>
+        <div className="content-wrapper" style={{ flex: 1, width: '100%' }}>
             <AutoSizer>
                 {({ width, height }: Size) => {
                     const numColumns = getNumColumns(width);
+                    const columnWidth = getColumnWidth(width, numColumns);
                     const numRows = getNumRows(width);
                     
                     return (
                         <InfiniteLoader
                             isRowLoaded={isRowLoaded}
                             loadMoreRows={({startIndex, stopIndex}) => fetchData(startIndex, stopIndex)}
-                            rowCount={images.length + LOAD_BATCH_SIZE} // done ? images.length : 
+                            rowCount={VIRTUAL_LIST_SIZE}
                             minimumBatchSize={LOAD_BATCH_SIZE}
                             threshold={10}
                         >
@@ -104,7 +125,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                                     ref={registerChild}
                                     cellRenderer={cellRenderer}
                                     columnCount={numColumns}
-                                    columnWidth={CARD_WIDTH}
+                                    columnWidth={columnWidth}
                                     height={height}
                                     rowCount={numRows}
                                     rowHeight={CARD_HEIGHT}
@@ -122,7 +143,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                 }}
             </AutoSizer>
         </div>
-    </>);
+    </div>);
 };
 
 export default as<PageMeta>({
