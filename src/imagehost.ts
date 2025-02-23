@@ -87,29 +87,35 @@ ImageRouter.get("/:file", async (req, res, next) => {
         // Result vars
         let data;
 
-        if (file.mime.startsWith("image")) {
-            const image = sharp(file.filePath);
-            if (thumbSize) {
-                const meta = await image.metadata();
-                const sizer = meta.width! > meta.height!
-                    ? { height: thumbSize } : { width: thumbSize };
+        try {
+            if (file.mime.startsWith("image")) {
+                const image = sharp(file.filePath);
+                if (thumbSize) {
+                    const meta = await image.metadata();
+                    const sizer = meta.width! > meta.height!
+                        ? { height: thumbSize } : { width: thumbSize };
 
-                data = await image.resize(sizer).toBuffer();
+                    data = await image.resize(sizer).toBuffer();
 
-                insertIntoCache(filename, thumbSize, data, file.mime);
+                    insertIntoCache(filename, thumbSize, data, file.mime);
+                } else {
+                    data = await image.toBuffer();
+
+                    insertIntoCache(filename, null, data, file.mime);
+                }
             } else {
-                data = await image.toBuffer();
-
-                insertIntoCache(filename, null, data, file.mime);
+                data = await readFile(file.filePath);
             }
-        } else {
-            data = await readFile(file.filePath);
+        } catch (e) {
+            console.error("Error serving image", e);
+            res.status(404).send("Not Found");
+            return;
         }
 
         res
             .contentType(file.mime)
             .send(data);
     } else {
-        next();
+        res.status(404).send("Not Found");
     }
 });

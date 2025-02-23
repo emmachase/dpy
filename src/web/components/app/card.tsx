@@ -85,7 +85,6 @@ export const Card: FC<{
     }));
 
     useEffect(() => {
-        console.log("isExpanded", isExpanded);
         if (isExpanded) {
             disableScroll();
         } else {

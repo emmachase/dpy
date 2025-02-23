@@ -36,28 +36,29 @@ class ImageManager {
 
         // Start new fetch chain
         this.currentPromise = new Promise(async (resolve) => {
-            // if (this.loading) {
-            //     resolve(this.images);
-            //     return;
-            // }
-
-            // this.loading = true;
-            console.log("fetching images", startIndex, stopIndex, this.images);
-            
             // Keep fetching until we either reach the requested index or run out of images
             while (!this.done && this.images.length <= stopIndex) {
                 const lastId = this.images.length > 0 ? +this.images[this.images.length - 1].id : 0;
-                const newImages = await fetchImages(lastId);
+                const newImages = await fetchImages(lastId, 100);
                 
                 if (newImages.length === 0) {
                     this.done = true;
                     break;
                 }
-                
+
                 this.images.push(...newImages);
+
+                // Check if any duplicates were added
+                const uniqueImages = this.images.filter((image, index, self) =>
+                    index === self.findIndex((t) => t.id === image.id)
+                );
+
+                if (uniqueImages.length !== this.images.length) {
+                    console.warn("duplicates images were returned", this.images.length, uniqueImages.length);
+                    this.images = uniqueImages;
+                }
             }
 
-            // this.loading = false;
             resolve(this.images);
         });
 
@@ -77,9 +78,12 @@ class ImageManager {
     }
 }
 
+const imageManager = {
+    current: new ImageManager()
+};
+
 const pageRoot: PageRootComponent = ({appParams}) => {
     const [images, setImages] = useState<ImageModel[]>([]);
-    const imageManager = useRef(new ImageManager());
 
     const fetchData = async (startIndex: number, stopIndex: number) => {
         const newImages = await imageManager.current.fetchData(startIndex, stopIndex);

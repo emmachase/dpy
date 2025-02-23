@@ -9,11 +9,11 @@ export interface ImageModel {
 }
 
 const IMAGES_ENDPOINT = "/list";
-export async function fetchImages(before?: number): Promise<ImageModel[]> {
+export async function fetchImages(before?: number, limit?: number): Promise<ImageModel[]> {
     try {
         const resp = await callAPI({
             endpoint: IMAGES_ENDPOINT,
-            queries: { before: before?.toString() ?? "null", gallery: "1" },
+            queries: { before: before?.toString() ?? "null", gallery: "1", limit: limit?.toString() ?? "100" },
             method: "GET",
         });
 
