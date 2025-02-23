@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { as } from "../../util/poly";
 import { PageMeta, PageRootComponent } from "../template";
 import { NavBar } from "../components/app/navbar";
@@ -13,53 +13,105 @@ const LOAD_BATCH_SIZE = 50;
 // Very large number to simulate infinite scrolling
 const VIRTUAL_LIST_SIZE = 1000000;
 
-const pageRoot: PageRootComponent = ({appParams}) => {
-    const [done, setDone] = useState(false);
-    const [loading, setLoading] = useState(false);
-    const [images, setImages] = useState<ImageModel[]>([]);
+class ImageManager {
+    private images: ImageModel[] = [];
+    // private loading = false;
+    private done = false;
+    private currentPromise: Promise<ImageModel[]> = Promise.resolve([]);
+    private maxRequestedIndex = 0;
 
-    const [maxIndex, setMaxIndex] = useState(0);
+    async fetchData(startIndex: number, stopIndex: number): Promise<ImageModel[]> {
+        console.log("fetchData", startIndex, stopIndex);
+        
+        // Update max requested index if this request goes further
+        this.maxRequestedIndex = Math.max(this.maxRequestedIndex, stopIndex);
 
-    // Add initial data loading
-    useEffect(() => {
-        if (images.length === 0 && !loading) {
-            void fetchData(0, LOAD_BATCH_SIZE);
+        // Wait for any ongoing fetch to complete
+        await this.currentPromise;
+
+        // If we're done or have enough images, return immediately
+        if (this.done && stopIndex < this.images.length) {
+            return this.images;
         }
-    }, []);
+
+        // Start new fetch chain
+        this.currentPromise = new Promise(async (resolve) => {
+            // if (this.loading) {
+            //     resolve(this.images);
+            //     return;
+            // }
+
+            // this.loading = true;
+            console.log("fetching images", startIndex, stopIndex, this.images);
+            
+            // Keep fetching until we either reach the requested index or run out of images
+            while (!this.done && this.images.length <= stopIndex) {
+                const lastId = this.images.length > 0 ? +this.images[this.images.length - 1].id : 0;
+                const newImages = await fetchImages(lastId);
+                
+                if (newImages.length === 0) {
+                    this.done = true;
+                    break;
+                }
+                
+                this.images.push(...newImages);
+            }
+
+            // this.loading = false;
+            resolve(this.images);
+        });
+
+        return this.currentPromise;
+    }
+
+    getImages(): ImageModel[] {
+        return this.images;
+    }
+
+    isDone(): boolean {
+        return this.done;
+    }
+
+    getMaxRequestedIndex(): number {
+        return this.maxRequestedIndex;
+    }
+}
+
+const pageRoot: PageRootComponent = ({appParams}) => {
+    const [images, setImages] = useState<ImageModel[]>([]);
+    const imageManager = useRef(new ImageManager());
 
     const fetchData = async (startIndex: number, stopIndex: number) => {
-        console.log("fetchData", startIndex, stopIndex);
-
-        if (stopIndex > maxIndex) {
-            setMaxIndex(stopIndex);
-        }
-
-        if (loading || done) return;
-        setLoading(true);
-        const lastId = startIndex > 0 ? +images[startIndex - 1]?.id : 0;
-        const newImages = await fetchImages(lastId);
-        if (newImages.length === 0) setDone(true);
-
-        while (stopIndex - startIndex > newImages.length) {
-            // Fake for now, just duplicate until we have enough
-            newImages.push(...newImages);
-        }
-        console.log("newImages", newImages.length);
-
-        setImages(prev => [...prev, ...newImages]);
-        setLoading(false);
+        const newImages = await imageManager.current.fetchData(startIndex, stopIndex);
+        setImages([...newImages]);
     };
 
     const isRowLoaded = ({ index }: { index: number }) => {
         return Boolean(images[index]);
     };
 
-    const cellRenderer = ({ columnIndex, key, rowIndex, style }: any) => {
-        const numColumns = getNumColumns(style.width);
-        const idx = rowIndex * numColumns + columnIndex;
-        
-        // Show skeleton card if we're beyond loaded images
-        if (idx >= images.length) {
+    const cellRenderer = (numColumns: number) => ({ columnIndex, key, rowIndex, style }: any) => {
+            const idx = rowIndex * numColumns + columnIndex;
+
+            // Show skeleton card if we're beyond loaded images
+            if (idx >= images.length) {
+                if (imageManager.current.isDone()) {
+                    return null; // No more images to load
+                }
+
+                return (
+                    <div key={key} style={{
+                        ...style,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}>
+                        <Card />
+                    </div>
+                );
+            }
+
+            const image = images[idx];
             return (
                 <div key={key} style={{
                     ...style,
@@ -67,29 +119,16 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                     justifyContent: 'center',
                     alignItems: 'center'
                 }}>
-                    <Card />
+                    <Card
+                        key={image.name ?? idx}
+                        url={image.name}
+                        type={image.mime.startsWith("video")
+                            ? CardContentType.VIDEO
+                            : CardContentType.IMAGE}
+                    />
                 </div>
             );
-        }
-
-        const image = images[idx];
-        return (
-            <div key={key} style={{
-                ...style,
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <Card
-                    key={image.name ?? idx}
-                    url={image.name}
-                    type={image.mime.startsWith("video")
-                        ? CardContentType.VIDEO
-                        : CardContentType.IMAGE}
-                />
-            </div>
-        );
-    };
+        };
 
     const getNumColumns = (width: number) => Math.max(1, Math.floor(width / CARD_WIDTH));
 
@@ -97,10 +136,11 @@ const pageRoot: PageRootComponent = ({appParams}) => {
         return width / numColumns;
     };
 
-    const getNumRows = (width: number) => {
-        const numColumns = getNumColumns(width);
+    const getNumRows = (numColumns: number) => {
+        if (imageManager.current.isDone()) return Math.ceil(imageManager.current.getImages().length / numColumns);
+
         // Calculate actual rows needed for current data plus one batch
-        return Math.ceil((maxIndex + LOAD_BATCH_SIZE) / numColumns);
+        return Math.ceil((imageManager.current.getMaxRequestedIndex() + LOAD_BATCH_SIZE) / numColumns);
     };
 
     return (<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
@@ -110,7 +150,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                 {({ width, height }: Size) => {
                     const numColumns = getNumColumns(width);
                     const columnWidth = getColumnWidth(width, numColumns);
-                    const numRows = getNumRows(width);
+                    const numRows = getNumRows(numColumns);
                     
                     return (
                         <InfiniteLoader
@@ -123,7 +163,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                             {({ onRowsRendered, registerChild }) => (
                                 <Grid
                                     ref={registerChild}
-                                    cellRenderer={cellRenderer}
+                                    cellRenderer={cellRenderer(numColumns)}
                                     columnCount={numColumns}
                                     columnWidth={columnWidth}
                                     height={height}
