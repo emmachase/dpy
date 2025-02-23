@@ -48,7 +48,10 @@ export const Card: FC<{
         const windowHeight = window.innerHeight;
         
         // Calculate dimensions that maintain aspect ratio and fill most of the screen
-        const aspectRatio = img.naturalWidth / img.naturalHeight;
+        const aspectRatio = img instanceof HTMLImageElement 
+            ? img.naturalWidth / img.naturalHeight 
+            : (img as HTMLVideoElement).videoWidth / (img as HTMLVideoElement).videoHeight;
+
         const maxWidth = windowWidth * 0.9;
         const maxHeight = windowHeight * 0.9;
         let targetWidth = maxWidth;
@@ -159,7 +162,11 @@ export const Card: FC<{
     const renderContent = (isExpanded = false) => (
         <div className="main-content">
             {props.type === CardContentType.VIDEO
-                ? <video {...(isExpanded ? expandedContentProps : contentProps)} ref={isExpanded ? fullImageRef : null}/>
+                ? <video 
+                    {...(isExpanded ? expandedContentProps : contentProps)} 
+                    ref={isExpanded ? fullImageRef : null}
+                    controls={isExpanded}
+                />
                 : <img {...(isExpanded ? expandedContentProps : contentProps)} ref={isExpanded ? fullImageRef : null}/>}
         </div>
     );
