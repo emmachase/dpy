@@ -175,6 +175,7 @@ export const Card: FC<{
             {props.type === CardContentType.VIDEO ? (
                 <video 
                     {...(isExpanded ? expandedContentProps : contentProps)} 
+                    src={props.url + "#t=0.001"}
                     ref={!isExpanded ? thumbImageRef : null}
                     controls={isExpanded}
                     className="absolute left-0 top-0 w-full h-full object-cover select-none"
@@ -227,7 +228,7 @@ export const Card: FC<{
                             position: 'fixed',
                             opacity: 1
                         }}
-                        onClick={handleClose}
+                        // onClick={handleClose}
                     >
                         {renderContent(true)}
                     </animated.div>
