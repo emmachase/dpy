@@ -28,10 +28,6 @@ daemon() {
 compile() {
     . tools/compile-web.sh
     info "Emitted page js files."
-    node tools/compile-css.mjs
-    info "Emitted css."
-    # . tools/compile-server.sh
-    # info "Emitted server js."
 }
 
 # restartserver() {
@@ -46,6 +42,10 @@ compile() {
 #     cd $baseDir
 # }
 
+# Start Tailwind CSS watcher
+bunx tailwindcss -i ./src/web/styles/tailwind.css -o ./build/styles.css --watch &
+
+# Start TypeScript server
 pnpx ts-node-dev --rs --transpile-only ./src/main.ts &
 
 daemon

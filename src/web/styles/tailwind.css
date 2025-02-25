@@ -1,0 +1,13 @@
+@import "tailwindcss";
+
+/* Custom styles that can't be easily represented in Tailwind will go here */ 
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+
+#approot {
+    width: 100%;
+    height: 100%;
+}

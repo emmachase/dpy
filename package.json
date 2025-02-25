@@ -7,11 +7,13 @@
   "author": "Emma",
   "license": "MIT",
   "scripts": {
-    "build": "./tools/compile-web.sh --production && node tools/compile-css.mjs && tsc -p tsconfig.json",
+    "build": "./tools/compile-web.sh --production && bunx tailwindcss -i ./src/web/styles/tailwind.css -o ./build/styles.css --minify && tsc -p tsconfig.json",
     "watch": "./tools/watcher.sh",
-    "watch-svr": "bun --watch src/main.ts"
+    "watch-svr": "bun --watch src/main.ts",
+    "watch-css": "bunx tailwindcss -i ./src/web/styles/tailwind.css -o ./build/styles.css --watch"
   },
   "devDependencies": {
+    "@tailwindcss/cli": "^4.0.8",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.21",
     "@types/inquirer": "^7.3.1",
@@ -26,10 +28,12 @@
     "@types/validator": "^13.1.0",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
+    "autoprefixer": "^10.4.20",
     "esbuild": "^0.25.0",
     "eslint": "^7.12.0",
     "eslint-plugin-react": "^7.21.5",
-    "sass": "^1.27.0",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.8",
     "ts-node-dev": "^1.0.0",
     "typescript": "^5.4.5"
   },
