@@ -41,9 +41,9 @@ const pageRoot: PageRootComponent = () => {
     const [description, setDescription] = useState("");
     const [tags, setTags] = useState("");
 
-    return (<>
+    return (<div className="py-safe">
         <NavBar activePage="UPLOAD"/>
-        <div className="m-auto w-full max-w-[1000px] pt-8">
+        <div className="m-auto w-full max-w-[1000px] pt-8 px-safe">
             <div className="flex justify-center flex-col md:flex-row">
                 <div className="flex flex-col" style={{alignItems: "center"}}>
                     <UploadBox onFileSelected={setFile}/>
@@ -108,7 +108,7 @@ const pageRoot: PageRootComponent = () => {
             </div>
         </div>
         <PageAccent/>
-    </>);
+    </div>);
 };
 
 export default as<PageMeta>({

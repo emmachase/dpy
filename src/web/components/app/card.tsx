@@ -15,7 +15,7 @@ const Backdrop: FC<{
         <div 
             onClick={props.onClick} 
             className={clazz(
-                "fixed inset-0 bg-black/30 z-10", 
+                "fixed inset-0 full-bleed bg-black/30 z-10", 
                 props.in ? "visible animate-fade-in" : "opacity-0 pointer-events-none"
             )}
         />

@@ -23,7 +23,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
     };
 
     return (
-        <div className="flex md:flex-row flex-col items-center h-screen">
+        <div className="flex md:flex-row flex-col items-center h-screen p-safe">
             {appParams.logo && 
                 <div className="flex-1 w-full grid place-items-center">
                     <div 
@@ -36,7 +36,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
             }
             <div className="flex-1 w-full">
                 <div className="flex justify-center">
-                    <div className="flex-1 text-center max-w-[400px]">
+                    <div className="flex-1 text-center max-w-[400px] p-4">
                         <h1 className="text-4xl font-black opacity-80 m-0">{appParams.title}</h1>
                         {appParams.subtitle && <h3 className="text-sm font-black opacity-60 m-0">{appParams.subtitle}</h3>}
                         <TextField 

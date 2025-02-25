@@ -137,9 +137,9 @@ const pageRoot: PageRootComponent = ({appParams}) => {
         return Math.ceil((imageManager.current.getMaxRequestedIndex() + LOAD_BATCH_SIZE) / numColumns);
     };
 
-    return (<div className="flex flex-col h-full overflow-hidden">
+    return (<div className="flex flex-col h-full overflow-hidden py-safe">
         <NavBar activePage="GALLERY"/>
-        <div className="m-auto w-full max-w-1000px flex-1">
+        <div className="m-auto w-full max-w-1000px flex-1 px-safe">
             <AutoSizer>
                 {({ width, height }: Size) => {
                     const numColumns = getNumColumns(width);

@@ -44,7 +44,7 @@ export default function(config: SiteConfig, ctx: PageMeta): string {
         <html lang="en">
         <head>
             <meta charset="UTF-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
             <title>${typeof ctx.pageTitle === "function" ? ctx.pageTitle(params) : ctx.pageTitle}</title>
             <link rel="icon" href="favicon.png">
             <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;900&display=swap" rel="stylesheet">
