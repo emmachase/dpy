@@ -171,7 +171,7 @@ export const Card: FC<{
     };
 
     const renderContent = (isExpanded = false) => (
-        <div className="relative w-full h-full rounded overflow-hidden">
+        <div className="relative w-full h-full rounded-sm overflow-hidden">
             {props.type === CardContentType.VIDEO ? (
                 <video 
                     {...(isExpanded ? expandedContentProps : contentProps)} 

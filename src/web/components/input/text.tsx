@@ -10,6 +10,7 @@ export const TextField: FC<{
     autofocus?: boolean
     multiline?: boolean
     onConfirm?: (x: string) => void
+    className?: string
 }> = (props) => {
     const controlProps = {
         autoFocus: props.autofocus,
@@ -25,7 +26,7 @@ export const TextField: FC<{
     };
 
     return (
-        <div className={clazz("my-4 mx-4", props.error ? "bg-error/15 text-error/85" : "")}>
+        <div className={clazz(props.error ? "bg-error/15 text-error/85" : "", props.className)}>
             {props.multiline
                 ? <textarea 
                     className="w-full bg-input text-text font-inherit text-lg leading-10 rounded-lg outline-none p-3 placeholder:font-bold placeholder:opacity-40"

@@ -4,7 +4,6 @@ import { PageMeta, PageRootComponent } from "../template";
 import { NavBar } from "../components/app/navbar";
 import { UploadBox } from "../components/img/uploadbox";
 import { PageAccent } from "../components/img/pageaccent";
-import { Flex } from "../components/layout/flex";
 import { TextField } from "../components/input/text";
 import { TaskButton } from "../components/input/taskbutton";
 import { uploadImage } from "../services/upload";
@@ -19,13 +18,13 @@ const FormEntry: FC<{
     onChange?: (value: string) => void
 }> = (props) => {
     return (
-        <div className="form-entry">
-            <Flex className="heading">
-                <span className="label">{props.label}</span>
-                <Flex.Child/>
+        <div className="mt-8 first:mt-0 w-full">
+            <div className="flex mb-2 items-baseline">
+                <span className="text-2xl opacity-65">{props.label}</span>
+                <div className="flex-1"/>
                 {props.optional &&
-                    <span className="optional">optional</span>}
-            </Flex>
+                    <span className="text-xs opacity-45">optional</span>}
+            </div>
             <TextField 
                 placeholder={props.placeholder} 
                 multiline={props.area}
@@ -44,13 +43,13 @@ const pageRoot: PageRootComponent = () => {
 
     return (<>
         <NavBar activePage="UPLOAD"/>
-        <div className="content-wrapper">
-            <Flex justifyContent="center" className="twobreak">
-                <Flex.Child nest direction="column" style={{alignItems: "center"}}>
+        <div className="m-auto w-full max-w-[1000px] pt-8">
+            <div className="flex justify-center flex-col md:flex-row">
+                <div className="flex flex-col" style={{alignItems: "center"}}>
                     <UploadBox onFileSelected={setFile}/>
-                </Flex.Child>
-                <Flex.Child className="form-bar" nest style={{justifyContent: "center"}}>
-                    <Flex direction="column">
+                </div>
+                <div className="p-6 md:mx-8 md:max-w-[500px] flex justify-center">
+                    <div className="flex flex-col">
                         <FormEntry
                             name="name"
                             label="Filename"
@@ -79,12 +78,12 @@ const pageRoot: PageRootComponent = () => {
                             onChange={setTags}
                         />
 
-                        <aside>
+                        <aside className="text-sm opacity-60 my-4">
                             The description and tags are purely used for searching / indexing purposes at the moment.
                         </aside>
 
-                        <Flex className="submit">
-                            <Flex.Child/>
+                        <div className="flex my-6 w-full">
+                            <div className="flex-1"/>
                             <TaskButton task={async () => {
                                 if (!file) {
                                     throw new Error("Please select a file first");
@@ -103,10 +102,10 @@ const pageRoot: PageRootComponent = () => {
 
                                 window.location.href = response.url;
                             }}>Upload</TaskButton>
-                        </Flex>
-                    </Flex>
-                </Flex.Child>
-            </Flex>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <PageAccent/>
     </>);

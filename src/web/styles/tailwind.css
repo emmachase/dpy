@@ -1,13 +1,99 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
-/* Custom styles that can't be easily represented in Tailwind will go here */ 
+@source '../**/*.{js,ts,jsx,tsx}';
 
+@theme {
+  /* Colors from theme.scss */
+  --color-primary: #cc0e4d;
+  --color-primary-dark: #790c5a;
+  --color-primary-light: #e6739f;
+  --color-primary-muted: #f1d4d4;
+  --color-text: #121212;
+  --color-alt: #ffffff;
+  --color-input: #dddde0;
+  --color-disabled: #eeeeef;
+  --color-error: #dc0a4d;
+
+  /* Border radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 10px;
+
+  /* Shadows */
+  --shadow-card: 0 5px 20px -2px rgba(0, 0, 0, 0.2);
+  --shadow-card-hover: 0 10px 30px -4px rgba(0, 0, 0, 0.3);
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.25s;
+  --animate-fade-out: fadeOut 0.25s;
+  --animate-button-loading: buttonLoading 0.5s infinite alternate;
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes buttonLoading {
+    0% {
+      background-color: var(--color-disabled);
+      color: color-mix(in srgb, var(--color-disabled) 90%, black);
+    }
+    100% {
+      background-color: color-mix(in srgb, var(--color-disabled) 97%, black);
+      color: color-mix(in srgb, var(--color-disabled) 85%, black);
+    }
+  }
+}
+
+/* Custom styles that can't be easily represented in Tailwind */
 html, body {
     width: 100%;
     height: 100%;
+    font-family: "Roboto", sans-serif;
+    margin: 0;
+    color: var(--color-text);
 }
 
 #approot {
     width: 100%;
     height: 100%;
+    min-height: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+/* Typography base styles */
+h1 {
+    font-size: 36px;
+    font-weight: 900;
+    opacity: 80%;
+    margin: 0;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 900;
+    opacity: 60%;
+    margin: 0;
+}
+
+/* Input specific styles */
+input[type="password"] {
+    font-weight: 900;
 }

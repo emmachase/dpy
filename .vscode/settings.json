@@ -13,5 +13,10 @@
         "strings": true
     },
     "css.validate": false,
-    "editor.inlineSuggest.enabled": true
+    "editor.inlineSuggest.enabled": true,
+    "tailwindCSS.experimental.classRegex": [
+        ["(?:\\b(?:const|let|var)\\s+)?[\\w$_]*(?:[Ss]tyles|[Cc]lasses|[Cc]lassnames)[\\w\\d]*\\s*(?:=|\\+=)\\s*['\"]([^'\"]*)['\"]"],
+        // ["clazz\\(([^)]*)\\)", "(['\"])([^'\"]*)\\2"],
+        ["clazz\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+    ]
 }

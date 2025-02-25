@@ -7,7 +7,7 @@
   "author": "Emma",
   "license": "MIT",
   "scripts": {
-    "build": "./tools/compile-web.sh --production && bunx tailwindcss -i ./src/web/styles/tailwind.css -o ./build/styles.css --minify && tsc -p tsconfig.json",
+    "build": "./tools/compile-web.sh --production && bunx tailwindcss -i ./src/web/styles/tailwind.css -o ./build/styles.css --minify && cp ./build/styles.css ./public/styles.css && tsc -p tsconfig.json",
     "watch": "./tools/watcher.sh",
     "watch-svr": "bun --watch src/main.ts",
     "watch-css": "bunx tailwindcss -i ./src/web/styles/tailwind.css -o ./build/styles.css --watch"
@@ -28,7 +28,6 @@
     "@types/validator": "^13.1.0",
     "@typescript-eslint/eslint-plugin": "^4.6.0",
     "@typescript-eslint/parser": "^4.6.0",
-    "autoprefixer": "^10.4.20",
     "esbuild": "^0.25.0",
     "eslint": "^7.12.0",
     "eslint-plugin-react": "^7.21.5",

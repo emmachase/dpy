@@ -36,7 +36,7 @@ export const NavBar: FC<{
 
     return (
         <header className={clazz(
-            "flex justify-between items-center p-4 bg-white shadow-md", 
+            "flex justify-between items-center p-4 bg-white border-b border-gray-200", 
             menuOpen && "flex-col"
         )}>
             <nav className={clazz(
@@ -61,7 +61,7 @@ export const NavBar: FC<{
                     onClick={handleLogout}
                     className="px-3 py-2 font-bold text-text/70 hover:text-primary/80 transition-colors duration-200"
                 >
-                    Logout
+                    LOGOUT
                 </a>
                 <div className={clazz("md:hidden", shouldMenu ? "block" : "hidden")}>
                     <HamburgerMenu

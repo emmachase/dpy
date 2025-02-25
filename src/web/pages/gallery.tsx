@@ -104,12 +104,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
                 }
 
                 return (
-                    <div key={key} style={{
-                        ...style,
-                        display: 'flex',
-                        justifyContent: 'center',
-                        alignItems: 'center'
-                    }}>
+                    <div key={key} className="flex justify-center items-center" style={style}>
                         <Card />
                     </div>
                 );
@@ -117,12 +112,7 @@ const pageRoot: PageRootComponent = ({appParams}) => {
 
             const image = images[idx];
             return (
-                <div key={key} style={{
-                    ...style,
-                    display: 'flex',
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
+                <div key={key} className="flex justify-center items-center" style={style}>
                     <Card
                         key={image.name ?? idx}
                         url={image.name}
@@ -147,9 +137,9 @@ const pageRoot: PageRootComponent = ({appParams}) => {
         return Math.ceil((imageManager.current.getMaxRequestedIndex() + LOAD_BATCH_SIZE) / numColumns);
     };
 
-    return (<div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    return (<div className="flex flex-col h-full overflow-hidden">
         <NavBar activePage="GALLERY"/>
-        <div className="content-wrapper" style={{ flex: 1, width: '100%' }}>
+        <div className="m-auto w-full max-w-1000px flex-1">
             <AutoSizer>
                 {({ width, height }: Size) => {
                     const numColumns = getNumColumns(width);
