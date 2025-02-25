@@ -25,10 +25,14 @@ export const TextField: FC<{
     };
 
     return (
-        <div className={clazz("textfield", props.error && "error")}>
+        <div className={clazz("my-4 mx-4", props.error ? "bg-error/15 text-error/85" : "")}>
             {props.multiline
-                ? <textarea {...controlProps}/>
-                : <input {...controlProps}/>}
+                ? <textarea 
+                    className="w-full bg-input text-text font-inherit text-lg leading-10 rounded-lg outline-none p-3 placeholder:font-bold placeholder:opacity-40"
+                    {...controlProps}/>
+                : <input 
+                    className="w-full bg-input text-text font-inherit text-lg leading-10 rounded-lg outline-none pl-4 placeholder:font-bold placeholder:opacity-40"
+                    {...controlProps}/>}
         </div>
     );
 };

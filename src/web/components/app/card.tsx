@@ -12,7 +12,13 @@ const Backdrop: FC<{
     onClick?: () => void
 }> = (props) => {
     return (
-        <div onClick={props.onClick} className={clazz("backdrop", props.in && "in")}/>
+        <div 
+            onClick={props.onClick} 
+            className={clazz(
+                "fixed inset-0 bg-black/30 z-10", 
+                props.in ? "visible animate-fade-in" : "opacity-0 pointer-events-none"
+            )}
+        />
     );
 };
 
@@ -165,23 +171,25 @@ export const Card: FC<{
     };
 
     const renderContent = (isExpanded = false) => (
-        <div className="main-content">
+        <div className="relative w-full h-full rounded overflow-hidden">
             {props.type === CardContentType.VIDEO ? (
                 <video 
                     {...(isExpanded ? expandedContentProps : contentProps)} 
                     ref={!isExpanded ? thumbImageRef : null}
                     controls={isExpanded}
+                    className="absolute left-0 top-0 w-full h-full object-cover select-none"
                 />
             ) : (
                 <>
-                    <img {...contentProps} 
-                        // style={{ display: isExpanded && fullImageLoaded ? 'none' : 'block' }} 
+                    <img 
+                        {...contentProps} 
                         ref={!isExpanded ? thumbImageRef : null}
+                        className="absolute left-0 top-0 w-full h-full object-cover select-none"
                     />
                     {isExpanded && (
                         <img 
                             {...expandedContentProps} 
-                            
+                            className="absolute left-0 top-0 w-full h-full object-cover select-none"
                             style={{ display: fullImageLoaded ? 'block' : 'none' }}
                         />
                     )}
@@ -194,10 +202,12 @@ export const Card: FC<{
         <>
             <div 
                 ref={cardRef}
-                className={clazz("im-card", imLoaded && props.url && "clickable")}
+                className={clazz(
+                    "relative w-40 h-40 transition-shadow duration-250 shadow-card hover:shadow-card-hover rounded-xl overflow-hidden", 
+                    imLoaded && props.url && "cursor-pointer"
+                )}
                 onClick={handleClick}
                 style={{
-                    position: "relative",
                     visibility: props.hide ? "hidden" : "visible",
                     opacity: (isExpanded || isClosing) ? 0 : 1
                 }}>
@@ -208,7 +218,10 @@ export const Card: FC<{
                 <>
                     <Backdrop in={!isClosing} onClick={handleClose} />
                     <animated.div 
-                        className={clazz("im-card expanded", isClosing && "no-shadow")}
+                        className={clazz(
+                            "rounded-xl overflow-hidden", 
+                            isClosing ? "" : "shadow-card-hover"
+                        )}
                         style={{
                             ...expandedStyle, 
                             position: 'fixed',

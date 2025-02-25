@@ -22,8 +22,16 @@ export const TaskButton: FC<{
         setHideLoading(true);
     };
 
+    const baseClasses = "block bg-primary text-alt text-lg leading-10 rounded-lg px-8 min-w-[200px] text-center cursor-pointer font-bold uppercase transition-colors duration-200 hover:bg-primary/90 active:bg-primary/80";
+    const disabledClasses = "bg-disabled text-disabled/70 cursor-default animate-pulse";
+
     return (
-        <button className={clazz("button", (props.disabled || loading) && "loading", hideLoading && "hide-load", props.className)}
+        <button 
+            className={clazz(
+                baseClasses, 
+                (props.disabled || loading) && !hideLoading ? disabledClasses : "",
+                props.className
+            )}
             disabled={props.disabled || loading}
             onClick={handleClick}
         >

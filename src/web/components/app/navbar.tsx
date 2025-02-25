@@ -35,16 +35,35 @@ export const NavBar: FC<{
     }
 
     return (
-        <header className={clazz(menuOpen && "open")}>
-            <nav>{pageOrder.map(([pageTitle, pageLink]) =>
-                <a key={pageTitle}
-                    className={clazz(pageTitle === props.activePage && "active")}
-                    href={pageLink}
-                >{pageTitle}</a>
-            )}</nav>
-            <div className="nav-right">
-                <a href="#" onClick={handleLogout}>Logout</a>
-                <div className="hamburger">
+        <header className={clazz(
+            "flex justify-between items-center p-4 bg-white shadow-md", 
+            menuOpen && "flex-col"
+        )}>
+            <nav className={clazz(
+                "flex", 
+                shouldMenu ? (menuOpen ? "flex-col w-full" : "flex-row") : "flex-row space-x-6"
+            )}>
+                {pageOrder.map(([pageTitle, pageLink]) =>
+                    <a key={pageTitle}
+                        className={clazz(
+                            "px-3 py-2 font-bold transition-colors duration-200",
+                            pageTitle === props.activePage 
+                                ? "text-primary" 
+                                : "text-text/70 hover:text-primary/80"
+                        )}
+                        href={pageLink}
+                    >{pageTitle}</a>
+                )}
+            </nav>
+            <div className="flex items-center space-x-6">
+                <a 
+                    href="#" 
+                    onClick={handleLogout}
+                    className="px-3 py-2 font-bold text-text/70 hover:text-primary/80 transition-colors duration-200"
+                >
+                    Logout
+                </a>
+                <div className={clazz("md:hidden", shouldMenu ? "block" : "hidden")}>
                     <HamburgerMenu
                         isOpen={menuOpen}
                         menuClicked={() => setMenuOpen(!menuOpen)}

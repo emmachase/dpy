@@ -39,18 +39,17 @@ export const Skeleton: React.FC<{
             style.borderRadius = "50%";
         }
 
-        let className = "react-loading-skeleton";
+        let baseClasses = "bg-gray-200 animate-pulse pointer-events-none absolute h-full left-0 top-0";
         if (customClassName) {
-            className += " " + customClassName;
+            baseClasses += " " + customClassName;
         }
 
         elements.push(
             <span
                 key={i}
-                className={clazz("loading-skeleton", className)}
+                className={clazz(baseClasses, fading ? "opacity-0" : "opacity-100")}
                 style={{
-                    animation: `skeleton-keyframes ${duration}s ease-in-out infinite`,
-                    opacity: fading ? 0 : 1,
+                    transition: `opacity ${duration}s ease-in-out`,
                     ...customStyle,
                     ...style,
                 }}
