@@ -19,7 +19,7 @@ async function handleLogout() {
 export const NavBar: FC<{
     activePage: NAV_PAGE
 }> = (props) => {
-    const shouldMenu = useMediaQuery("(max-width: 550px)");
+    const shouldMenu = useMediaQuery("(max-width: 40rem)");
     const [menuOpen, setMenuOpen] = useState(false);
 
     // Make sure that the menu gets closed between layout shifts
@@ -27,21 +27,25 @@ export const NavBar: FC<{
         if (menuOpen) setMenuOpen(false);
     }, [shouldMenu]);
 
-    const pageOrder = [...navPages];
+    let pageOrder = [...navPages];
     if (shouldMenu) {
         const idx = pageOrder.findIndex(([menu]) => menu === props.activePage);
         const activeItem = pageOrder.splice(idx, 1)[0];
         pageOrder.unshift(activeItem);
+
+        if (!menuOpen) {
+            pageOrder = pageOrder.slice(0, 1);
+        }
     }
 
     return (
         <header className={clazz(
-            "flex justify-between items-center p-4 bg-white border-b border-gray-200", 
-            menuOpen && "flex-col"
+            "flex justify-between items-start p-4 bg-white border-b border-gray-200", 
         )}>
             <nav className={clazz(
                 "flex", 
-                shouldMenu ? (menuOpen ? "flex-col w-full" : "flex-row") : "flex-row space-x-6"
+                // shouldMenu ? (menuOpen ? "flex-col w-full" : "flex-row") : "flex-row space-x-6"
+                "flex-col sm:flex-row"
             )}>
                 {pageOrder.map(([pageTitle, pageLink]) =>
                     <a key={pageTitle}
